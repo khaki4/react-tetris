@@ -1,0 +1,14 @@
+.playGround_wrapper {
+  position: relative;
+  width: 800px;
+  height: 500px;
+  border: 1px solid red
+}
+
+.blockItem {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  background: blue
+}

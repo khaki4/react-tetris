@@ -1,11 +1,14 @@
 import React from "react";
+import { connect } from "react-redux";
 
-const BlockItem = () => {
+const BlockItem = ({position}) => {
   return (
-    <div>
+    <div className="blockItem" style={position}>
       item
     </div>
   )
 }
 
-export default BlockItem
+export default connect(
+
+)(BlockItem)

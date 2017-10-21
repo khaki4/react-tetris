@@ -1,10 +1,10 @@
 import React from "react";
-import BlockItem from "./BlockItem";
+import BlockItemManager from "./BlockItemManager";
 
 const PlayGround = () => {
   return (
-    <div>
-      <BlockItem />
+    <div className="playGround_wrapper">
+      <BlockItemManager />
     </div>
   )
 }
