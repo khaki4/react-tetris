@@ -1,28 +1,87 @@
-import React from "react";
+import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import BlockItem from "./BlockItem";
-import { moveTick } from '../reducers/playReducer'
+import { moveTick, setBlockInitPosition, setMoldShape } from '../reducers/playReducer'
 
-const BlockItemManager = (props) => {
-  const LIMIT_TOP = 400
-  const MOVE_TICK = setTimeout(() => {
-    props.moveTick()
-  }, 300)
-  if (props.position.top > LIMIT_TOP) {
-    clearTimeout(MOVE_TICK)
+const moldShape = () => {
+  const moldSelector = [
+    [
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      1, 1, 1, 1,
+      0, 0, 0, 0,
+    ],
+    [
+      0, 0, 0, 0,
+      0, 1, 1, 0,
+      0, 1, 1, 0,
+      0, 0, 0, 0,
+    ],
+    [
+      0, 0, 0, 0,
+      0, 1, 0, 0,
+      1, 1, 1, 0,
+      0, 0, 0, 0,
+    ],
+    [
+      0, 0, 0, 0,
+      0, 1, 1, 0,
+      1, 1, 0, 0,
+      0, 0, 0, 0,
+    ],
+    [
+      0, 0, 0, 0,
+      0, 1, 0, 0,
+      1, 1, 1, 0,
+      0, 0, 0, 0,
+    ]
+  ]
+  const pieceIndex = Math.round(Math.random() * (moldSelector.length - 1))
+  const mold = moldSelector[pieceIndex]
+
+  return mold
+}
+
+
+class BlockItemManager extends PureComponent {
+  constructor(props) {
+    super(props)
+    this.LIMIT_TOP = 400
+    this.MOVE_TICK = null
   }
-  return (
-    <div>
-      <BlockItem
-        position={props.position}
-      />
-    </div>
-  )
+  componentDidMount() {
+    this.props.setMoldShape(moldShape())
+    this.movePieceAuto()
+  }
+  restartBlock = () => {
+    this.props.setMoldShape(moldShape())
+    this.props.setBlockInitPosition()
+    this.movePieceAuto()
+  }
+  movePieceAuto = () => {
+    this.MOVE_TICK = setInterval(() => {
+      this.props.moveTick()
+      if (this.props.position.top > this.LIMIT_TOP) {
+        clearInterval(this.MOVE_TICK)
+        this.restartBlock()
+      }
+    }, 300)
+  }
+  render() {
+    return (
+      <div>
+        <BlockItem
+          position={this.props.position}
+        />
+      </div>
+    )
+  }
+
 }
 
 export default connect(
   (state) => ({
     position: state.play.position
   }),
-  { moveTick }
+  { moveTick, setBlockInitPosition, setMoldShape }
 )(BlockItemManager)
