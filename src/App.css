@@ -10,5 +10,18 @@
   position: absolute;
   top: 0;
   left: 50%;
-  background: blue
+}
+
+.blockmold_wrapper {
+  width: 80px;
+  height: 80px;
+}
+.blockmold_unit {
+  float: left;
+  width: 20px;
+  height: 20px;
+}
+
+.blockmold_unit.filled {
+  background: red;
 }
