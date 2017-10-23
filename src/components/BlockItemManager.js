@@ -6,34 +6,34 @@ import { moveTick, setBlockInitPosition, setMoldShape } from '../reducers/playRe
 const moldShape = () => {
   const moldSelector = [
     [
-      0, 0, 0, 0,
-      0, 0, 0, 0,
-      1, 1, 1, 1,
-      0, 0, 0, 0,
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [1, 1, 1, 1],
+      [0, 0, 0, 0],
     ],
     [
-      0, 0, 0, 0,
-      0, 1, 1, 0,
-      0, 1, 1, 0,
-      0, 0, 0, 0,
+      [0, 0, 0, 0],
+      [0, 1, 1, 0],
+      [0, 1, 1, 0],
+      [0, 0, 0, 0],
     ],
     [
-      0, 0, 0, 0,
-      0, 1, 0, 0,
-      1, 1, 1, 0,
-      0, 0, 0, 0,
+      [0, 0, 0, 0],
+      [0, 1, 0, 0],
+      [1, 1, 1, 0],
+      [0, 0, 0, 0],
     ],
     [
-      0, 0, 0, 0,
-      0, 1, 1, 0,
-      1, 1, 0, 0,
-      0, 0, 0, 0,
+      [0, 0, 0, 0],
+      [0, 1, 1, 0],
+      [1, 1, 0, 0],
+      [0, 0, 0, 0],
     ],
     [
-      0, 0, 0, 0,
-      0, 1, 0, 0,
-      1, 1, 1, 0,
-      0, 0, 0, 0,
+      [0, 0, 0, 0],
+      [0, 1, 0, 0],
+      [1, 1, 1, 0],
+      [0, 0, 0, 0],
     ]
   ]
   const pieceIndex = Math.round(Math.random() * (moldSelector.length - 1))
@@ -41,7 +41,6 @@ const moldShape = () => {
 
   return mold
 }
-
 
 class BlockItemManager extends PureComponent {
   constructor(props) {
@@ -51,8 +50,9 @@ class BlockItemManager extends PureComponent {
   }
   componentDidMount() {
     this.props.setMoldShape(moldShape())
-    this.movePieceAuto()
+    // this.movePieceAuto()
   }
+  
   restartBlock = () => {
     this.props.setMoldShape(moldShape())
     this.props.setBlockInitPosition()

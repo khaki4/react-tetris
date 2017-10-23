@@ -1,3 +1,6 @@
+import _flatten from 'lodash/flatten'
+import _chunk from 'lodash/chunk'
+
 // Actions
 export const MOVE_TICK = 'MOVE_TICK'
 export const SET_BLOCK_INIT_POSITION = 'SET_BLOCK_INIT_POSITION'
@@ -52,3 +55,18 @@ export default (() => {
     }
   }
 })()
+
+// selector
+export const getTransformedMoldShape = (preMoldShape, action) => {
+  const arrLen = preMoldShape.length - 1
+  const copiedMoldShape = _chunk(_flatten(preMoldShape), 4)
+  
+  for (let i = 0; i < arrLen; i++) {
+    for (let j = 0; j < arrLen; j++) {
+      copiedMoldShape[j][arrLen -1 - i] = preMoldShape[i][j]
+    }
+  }
+  console.log(preMoldShape)
+  console.log(copiedMoldShape)
+  return copiedMoldShape
+}

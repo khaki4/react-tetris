@@ -5,8 +5,10 @@ import { setMoldShape } from '../reducers/playReducer';
 const BlockMold = ({ moldShape }) => {
   return (
     <div className="blockmold_wrapper">
-      {moldShape.map((sector, index) => {
-        return <div key={index} className={`blockmold_unit ${sector ? 'filled' : ''}`}></div>
+      {moldShape.map((rows, i) => {
+        return rows.map((sector, j) => {
+          return <div key={i + j} className={`blockmold_unit ${sector ? 'filled' : ''}`}></div>
+        })
       })}
     </div>
   )
