@@ -7,7 +7,7 @@ export const SET_BLOCK_INIT_POSITION = 'SET_BLOCK_INIT_POSITION'
 export const SET_MOLD_SHAPE = 'SET_MOLD_SHAPE'
 
 // Action Creators
-export const moveTick = (position) => ({type: MOVE_TICK, payload: position})
+export const moveTick = () => ({type: MOVE_TICK})
 export const setBlockInitPosition = () => ({type: SET_BLOCK_INIT_POSITION})
 export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: moldShape})
 
@@ -16,18 +16,33 @@ export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: mold
 export default (() => {
   const initBoard = _chunk(new Array(200), 10)
   const initState = {
-    position: {
-      top: 0
-    },
+    position: 0,
     board: initBoard,
     moldShape: [],
   }
   const _moveTick = (state, action) => {
+    const getNextBoardState = (currentBoard) => {
+      const copiedBoard = _chunk([..._flatten(currentBoard)], 10)
+      const maxIndex = copiedBoard.length - 1
+      let position = state.position
+      currentBoard.forEach((rows, i, iArr) => {
+        if (i >= maxIndex) return
+        rows.forEach((sector, j) => {
+          copiedBoard[i + 1][j] = iArr[i][j]
+          if (sector) {
+            position = i + 1
+          }
+        })
+      })
+      return {
+        board: copiedBoard,
+        position
+      }
+    }
+    const nextBoardState = getNextBoardState(state.board)
     return {
       ...state,
-      position: {
-        top: state.position.top + 50
-      }
+      ...nextBoardState,
     }
   }
   const _restartBlock = (state, action) => {
