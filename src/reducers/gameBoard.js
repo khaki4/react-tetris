@@ -14,10 +14,12 @@ export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: mold
 
 // reducer
 export default (() => {
+  const initBoard = _chunk(new Array(200), 10)
   const initState = {
     position: {
       top: 0
     },
+    board: initBoard,
     moldShape: [],
   }
   const _moveTick = (state, action) => {
@@ -36,10 +38,22 @@ export default (() => {
       }
     }
   }
+  const _updateBoard = (preBoard, moldShape) => {
+    const copiedMold = _chunk([..._flatten(moldShape)], 4)
+    const halfPositionHelper = 3
+    moldShape.forEach((rows, i) => {
+      rows.forEach((sector, j)=> {
+        preBoard[i][j + halfPositionHelper] = copiedMold[i][j]
+      })
+    })
+    
+    return preBoard
+  }
   const _setMoldShape = (state, action) => {
     return {
       ...state,
-      moldShape: action.payload
+      moldShape: action.payload,
+      board: _updateBoard(state.board, action.payload)
     }
   }
   return (state = initState, action) => {
@@ -70,3 +84,4 @@ export const getTransformedMoldShape = (preMoldShape, action) => {
   console.log(copiedMoldShape)
   return copiedMoldShape
 }
+

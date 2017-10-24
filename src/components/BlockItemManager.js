@@ -1,15 +1,15 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import BlockItem from "./BlockItem";
-import { moveTick, setBlockInitPosition, setMoldShape } from '../reducers/playReducer'
+import { moveTick, setBlockInitPosition, setMoldShape } from '../reducers/gameBoard'
 
 const moldShape = () => {
   const moldSelector = [
     [
-      [0, 0, 0, 0],
-      [0, 0, 0, 0],
-      [1, 1, 1, 1],
-      [0, 0, 0, 0],
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
     ],
     [
       [0, 0, 0, 0],
@@ -31,8 +31,8 @@ const moldShape = () => {
     ],
     [
       [0, 0, 0, 0],
-      [0, 1, 0, 0],
-      [1, 1, 1, 0],
+      [1, 1, 0, 0],
+      [0, 1, 1, 0],
       [0, 0, 0, 0],
     ]
   ]

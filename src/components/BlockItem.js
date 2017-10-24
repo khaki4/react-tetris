@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { setMoldShape } from '../reducers/playReducer';
+import { setMoldShape } from '../reducers/gameBoard';
 
 const BlockMold = ({ moldShape }) => {
   return (
