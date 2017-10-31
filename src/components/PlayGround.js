@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import BlockItemManager from "./BlockItemManager";
 import GameBoard from "./GameBoard";
-import { getTransformedMoldShape, setMoldShape, moveTick, setActiveToComplete } from '../reducers/gameBoard'
+import { getTransformedMoldShape, setMoldShape, moveTick, setActiveToComplete, setBlockInitPosition } from '../reducers/gameBoard'
 import { moldShape } from "../lib/BlockMold";
 
 class PlayGround extends PureComponent {
@@ -21,11 +21,17 @@ class PlayGround extends PureComponent {
   movePieceAuto = () => {
     this.MOVE_TICK = setInterval(() => {
       this.props.moveTick()
-      if (this.props.position > this.LIMIT_TOP) {
-        this.props.setActiveToComplete()
+      if (this.props.position > this.LIMIT_TOP || this.props.isLimitedEnd) {
         clearInterval(this.MOVE_TICK)
+        this.restartBlock()
       }
     }, 300)
+  }
+  restartBlock = () => {
+    this.props.setActiveToComplete()
+    this.props.setMoldShape(moldShape())
+    this.props.setBlockInitPosition()
+    this.movePieceAuto()
   }
   handleKeyUp = (e) => {
     switch (e.key) {
@@ -50,6 +56,7 @@ export default connect(
     moldShape: state.play.moldShape,
     board: state.play.board,
     position: state.play.position,
+    isLimitedEnd: state.play.isLimitedEnd,
   }),
-  { setMoldShape, moveTick, setActiveToComplete }
+  { setMoldShape, moveTick, setActiveToComplete, setBlockInitPosition }
 )(PlayGround)

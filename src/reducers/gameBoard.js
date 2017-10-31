@@ -21,24 +21,33 @@ export default (() => {
     position: 0,
     board: initBoard,
     moldShape: [],
+    isLimitedEnd: false,
   }
   const _moveTick = (state, action) => {
     const getNextBoardState = (currentBoard) => {
       const copiedBoard = _chunk([..._flatten(currentBoard)], 10)
       const maxIndex = copiedBoard.length - 1
       let position = state.position
+      let isLimitedEnd = state.isLimitedEnd
       currentBoard.forEach((rows, i, iArr) => {
         if (i >= maxIndex) return
-        rows.forEach((sector, j) => {
-          copiedBoard[i + 1][j] = iArr[i][j]
-          if (sector) {
+        rows.forEach((currentSector, j) => {
+          const nextSector = copiedBoard[i + 1][j]
+          
+          if (currentSector !== blockStatus[3] && nextSector !== blockStatus[3]) {
+            copiedBoard[i + 1][j] = currentSector
+          } else if (currentSector === blockStatus[1] && nextSector === blockStatus[3]) { // 현재 active sector &&
+            isLimitedEnd = true
+          }
+          if (currentSector === blockStatus[1]) {
             position = i + 1
           }
         })
       })
       return {
-        board: copiedBoard,
-        position
+        board: isLimitedEnd ? currentBoard : copiedBoard,
+        position,
+        isLimitedEnd,
       }
     }
     const nextBoardState = getNextBoardState(state.board)
@@ -50,9 +59,8 @@ export default (() => {
   const _restartBlock = (state, action) => {
     return {
       ...state,
-      position: {
-        top: initState.position.top
-      }
+      position: initState.position,
+      isLimitedEnd: false,
     }
   }
   const _updateBoard = (preBoard, moldShape) => {
