@@ -2,7 +2,7 @@ import React, { PureComponent } from "react";
 import { connect } from "react-redux";
 import BlockItemManager from "./BlockItemManager";
 import GameBoard from "./GameBoard";
-import { getTransformedMoldShape, setMoldShape, moveTick } from '../reducers/gameBoard'
+import { getTransformedMoldShape, setMoldShape, moveTick, setActiveToComplete } from '../reducers/gameBoard'
 import { moldShape } from "../lib/BlockMold";
 
 class PlayGround extends PureComponent {
@@ -22,6 +22,7 @@ class PlayGround extends PureComponent {
     this.MOVE_TICK = setInterval(() => {
       this.props.moveTick()
       if (this.props.position > this.LIMIT_TOP) {
+        this.props.setActiveToComplete()
         clearInterval(this.MOVE_TICK)
       }
     }, 300)
@@ -50,5 +51,5 @@ export default connect(
     board: state.play.board,
     position: state.play.position,
   }),
-  { setMoldShape, moveTick }
+  { setMoldShape, moveTick, setActiveToComplete }
 )(PlayGround)

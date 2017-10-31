@@ -1,20 +1,22 @@
 import _flatten from 'lodash/flatten'
 import _chunk from 'lodash/chunk'
+import { blockStatus } from '../lib/BlockMold'
 
 // Actions
 export const MOVE_TICK = 'MOVE_TICK'
 export const SET_BLOCK_INIT_POSITION = 'SET_BLOCK_INIT_POSITION'
 export const SET_MOLD_SHAPE = 'SET_MOLD_SHAPE'
+export const SET_ACTIVE_TO_COMPLETE = 'SET_ACTIVE_TO_COMPLETE'
 
 // Action Creators
 export const moveTick = () => ({type: MOVE_TICK})
 export const setBlockInitPosition = () => ({type: SET_BLOCK_INIT_POSITION})
 export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: moldShape})
-
+export const setActiveToComplete = () => ({type: SET_ACTIVE_TO_COMPLETE})
 
 // reducer
 export default (() => {
-  const initBoard = _chunk(new Array(200), 10)
+  const initBoard = _chunk(new Array(200).fill(0), 10)
   const initState = {
     position: 0,
     board: initBoard,
@@ -71,6 +73,19 @@ export default (() => {
       board: _updateBoard(state.board, action.payload)
     }
   }
+  const _setActiveToComplete = (state, action) => {
+    const transActiveToComplete = (_gameBoard) => {
+      return _gameBoard.map(rows => {
+        return rows.map(sector => {
+          return sector === blockStatus[1] ? blockStatus[3] : sector
+        })
+      })
+    }
+    return {
+      ...state,
+      board: transActiveToComplete(state.board)
+    }
+  }
   return (state = initState, action) => {
     switch (action.type) {
       case SET_BLOCK_INIT_POSITION:
@@ -79,6 +94,8 @@ export default (() => {
         return _moveTick(state, action)
       case SET_MOLD_SHAPE:
         return _setMoldShape(state, action)
+      case SET_ACTIVE_TO_COMPLETE:
+        return _setActiveToComplete(state, action)
       default:
         return state
     }
