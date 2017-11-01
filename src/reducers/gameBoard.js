@@ -1,3 +1,4 @@
+import { createSelector } from 'reselect';
 import _flatten from 'lodash/flatten'
 import _chunk from 'lodash/chunk'
 import { blockStatus } from '../lib/BlockMold'
@@ -7,12 +8,14 @@ export const MOVE_TICK = 'MOVE_TICK'
 export const SET_BLOCK_INIT_POSITION = 'SET_BLOCK_INIT_POSITION'
 export const SET_MOLD_SHAPE = 'SET_MOLD_SHAPE'
 export const SET_ACTIVE_TO_COMPLETE = 'SET_ACTIVE_TO_COMPLETE'
+export const CHECK_ENABLE_TO_MOVE_BLOCK = 'CHECK_ENABLE_TO_MOVE_BLOCK'
 
 // Action Creators
 export const moveTick = () => ({type: MOVE_TICK})
 export const setBlockInitPosition = () => ({type: SET_BLOCK_INIT_POSITION})
 export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: moldShape})
 export const setActiveToComplete = () => ({type: SET_ACTIVE_TO_COMPLETE})
+export const checkEnableToMoveBlock = (currentBoard, direction) => ({type:CHECK_ENABLE_TO_MOVE_BLOCK, payload: currentBoard, direction})
 
 // reducer
 export default (() => {
@@ -21,23 +24,19 @@ export default (() => {
     position: 0,
     board: initBoard,
     moldShape: [],
-    isLimitedEnd: false,
   }
   const _moveTick = (state, action) => {
     const getNextBoardState = (currentBoard) => {
       const copiedBoard = _chunk([..._flatten(currentBoard)], 10)
       const maxIndex = copiedBoard.length - 1
       let position = state.position
-      let isLimitedEnd = state.isLimitedEnd
-      currentBoard.forEach((rows, i, iArr) => {
+      currentBoard.forEach((rows, i) => {
         if (i >= maxIndex) return
         rows.forEach((currentSector, j) => {
           const nextSector = copiedBoard[i + 1][j]
           
           if (currentSector !== blockStatus[3] && nextSector !== blockStatus[3]) {
             copiedBoard[i + 1][j] = currentSector
-          } else if (currentSector === blockStatus[1] && nextSector === blockStatus[3]) { // 현재 active sector &&
-            isLimitedEnd = true
           }
           if (currentSector === blockStatus[1]) {
             position = i + 1
@@ -45,9 +44,8 @@ export default (() => {
         })
       })
       return {
-        board: isLimitedEnd ? currentBoard : copiedBoard,
+        board: copiedBoard,
         position,
-        isLimitedEnd,
       }
     }
     const nextBoardState = getNextBoardState(state.board)
@@ -60,7 +58,6 @@ export default (() => {
     return {
       ...state,
       position: initState.position,
-      isLimitedEnd: false,
     }
   }
   const _updateBoard = (preBoard, moldShape) => {
@@ -94,6 +91,7 @@ export default (() => {
       board: transActiveToComplete(state.board)
     }
   }
+
   return (state = initState, action) => {
     switch (action.type) {
       case SET_BLOCK_INIT_POSITION:
@@ -124,4 +122,37 @@ export const getTransformedMoldShape = (preMoldShape, action) => {
   console.log(copiedMoldShape)
   return copiedMoldShape
 }
+
+export const getNextStepState = (() => {
+  const gameBoardSelector = currentGameBoard => currentGameBoard
+  const directionSelector = (currentGameBoard, direction) => direction
+  return createSelector(
+    gameBoardSelector,
+    directionSelector,
+    (currentGameBoard, direction) => {
+      switch (direction) {
+        case 'down':
+          const enableToMove = (currentGameBoard) => {
+            const copiedBoard = _chunk([..._flatten(currentGameBoard)], 10)
+            const maxIndex = copiedBoard.length - 1
+            let isLimitedEnd = false
+            currentGameBoard.forEach((rows, i) => {
+              if (i >= maxIndex) return
+              rows.forEach((currentSector, j) => {
+                const nextSector = copiedBoard[i + 1][j]
+                if (currentSector === blockStatus[1] && nextSector === blockStatus[3]) { // 현재 active sector &&
+                  isLimitedEnd = true
+                }
+              })
+            })
+            return isLimitedEnd
+          }
+          return enableToMove(currentGameBoard)
+        default:
+          return currentGameBoard
+      }
+    }
+  )
+})()
+
 

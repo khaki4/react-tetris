@@ -3,13 +3,26 @@ import * as fromBlockMold from '../../lib/BlockMold'
 import _chunk from 'lodash/chunk'
 
 describe('gameBoard Test', () => {
-  const initBoard = _chunk(new Array(200).fill(0), 10)
-  const expectedBoard = _chunk(new Array(200).fill(0), 10)
-  const initState = {
-    position: 0,
-    board: initBoard,
-    moldShape: [],
-  }
+  let initBoard, expectedBoard, initState;
+  beforeEach(() => {
+    initBoard = _chunk(new Array(200).fill(0), 10)
+    expectedBoard = _chunk(new Array(200).fill(0), 10)
+    initState = {
+      position: 0,
+      board: initBoard,
+      moldShape: [],
+    }
+  })
+  afterEach(() => {
+    initBoard = _chunk(new Array(200).fill(0), 10)
+    expectedBoard = _chunk(new Array(200).fill(0), 10)
+    initState = {
+      position: 0,
+      board: initBoard,
+      moldShape: [],
+    }
+  })
+
   it('setActiveToComplete: active 블록은 complete 블록으로 바뀌어야 한다', () => {
     initBoard[19][0] = fromBlockMold.blockStatus[1]
     initBoard[19][1] = fromBlockMold.blockStatus[1]
@@ -22,5 +35,88 @@ describe('gameBoard Test', () => {
         ...initState,
         board: expectedBoard,
       })
+  })
+
+  it('checkEnableToMoveBlock: 블록이 이동 한 후 complete 블록과 겹치치 않으면 isLimitedEnd false 반환 해야 한다', () => {
+    initBoard[17][0] = fromBlockMold.blockStatus[1]
+    initBoard[17][1] = fromBlockMold.blockStatus[1]
+    initBoard[17][2] = fromBlockMold.blockStatus[1]
+    initBoard[19][0] = fromBlockMold.blockStatus[3]
+    initBoard[19][1] = fromBlockMold.blockStatus[3]
+    initBoard[19][2] = fromBlockMold.blockStatus[3]
+
+    expect(fromGameBoard.getNextStepState(initBoard, 'down'))
+      .toEqual(false)
+  })
+  it('checkEnableToMoveBlock: 블록이 이동 한 후 complete 블록과 겹쳐지면 isLimitedEnd true를 반환 해야 한다', () => {
+    initBoard[18][0] = fromBlockMold.blockStatus[1]
+    initBoard[18][1] = fromBlockMold.blockStatus[1]
+    initBoard[18][2] = fromBlockMold.blockStatus[1]
+    initBoard[19][0] = fromBlockMold.blockStatus[3]
+    initBoard[19][1] = fromBlockMold.blockStatus[3]
+    initBoard[19][2] = fromBlockMold.blockStatus[3]
+
+    expect(fromGameBoard.getNextStepState(initBoard, 'down'))
+      .toEqual(true)
+  })
+  it('블록이 회전 되어야 한다', () => {
+    const beforBlock = [
+      [0, 0, 0, 0],
+      [0, 1, 0, 0],
+      [1, 1, 1, 0],
+      [0, 0, 0, 0],
+    ]
+    const afterBlock = [
+      [1, 0, 0, 0],
+      [1, 1, 0, 0],
+      [1, 0, 0, 0],
+      [0, 0, 0, 0],
+    ]
+  })
+  it('한다', () => {
+    const initBoard = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+    const nextBoard =  [
+      [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]
   })
 })
