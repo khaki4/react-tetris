@@ -59,21 +59,73 @@ describe('gameBoard Test', () => {
     expect(fromGameBoard.getNextStepState(initBoard, 'down'))
       .toEqual(true)
   })
-  it('블록이 회전 되어야 한다', () => {
-    const beforBlock = [
+  describe('블록이 회전 되어야 한다', () => {
+    const beforeBlock = [
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [1, 1, 1, 1],
+      [0, 0, 0, 0],
+    ]
+    const afterBlock = [
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+      [0, 1, 0, 0],
+    ]
+    const beforeBlock2 = [
+      [0, 0, 0, 0],
+      [0, 1, 1, 0],
+      [0, 1, 1, 0],
+      [0, 0, 0, 0],
+    ]
+    const afterBlock2 = [
+      [0, 0, 0, 0],
+      [0, 1, 1, 0],
+      [0, 1, 1, 0],
+      [0, 0, 0, 0],
+    ]
+    const beforeBlock3 = [
       [0, 0, 0, 0],
       [0, 1, 0, 0],
       [1, 1, 1, 0],
       [0, 0, 0, 0],
     ]
-    const afterBlock = [
-      [1, 0, 0, 0],
-      [1, 1, 0, 0],
-      [1, 0, 0, 0],
+    const afterBlock3 = [
+      [0, 1, 0, 0],
+      [0, 1, 1, 0],
+      [0, 1, 0, 0],
       [0, 0, 0, 0],
     ]
+    const beforeBlock4 = [
+      [0, 0, 0, 0],
+      [0, 1, 1, 0],
+      [1, 1, 0, 0],
+      [0, 0, 0, 0],
+    ]
+    const afterBlock4 = [
+      [0, 1, 0, 0],
+      [0, 1, 1, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 0],
+    ]
+    it('test1', () => {
+      expect(fromGameBoard.getTransformedMoldShape(beforeBlock))
+        .toEqual(afterBlock)
+    })
+    it('test2', () => {
+      expect(fromGameBoard.getTransformedMoldShape(beforeBlock2))
+        .toEqual(afterBlock2)
+    })
+    it('test3', () => {
+      expect(fromGameBoard.getTransformedMoldShape(beforeBlock3))
+        .toEqual(afterBlock3)
+    })
+    it('test4', () => {
+      expect(fromGameBoard.getTransformedMoldShape(beforeBlock4))
+        .toEqual(afterBlock4)
+    })
   })
-  it('한다', () => {
+  it('MOVE_TICK 한칸 내려온 모습이 돼야한다', () => {
     const initBoard = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -97,10 +149,10 @@ describe('gameBoard Test', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ]
     const nextBoard =  [
-      [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
-      [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -118,5 +170,7 @@ describe('gameBoard Test', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ]
+    expect(reducer({...initState, board: initBoard}, fromGameBoard.moveTick()).board)
+      .toEqual(nextBoard)
   })
 })

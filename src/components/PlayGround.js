@@ -58,7 +58,7 @@ export default connect(
   (state) => ({
     moldShape: state.play.moldShape,
     board: state.play.board,
-    position: state.play.position,
+    position: state.play.position.y,
   }),
   { setMoldShape, moveTick, setActiveToComplete, setBlockInitPosition }
 )(PlayGround)

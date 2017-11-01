@@ -21,7 +21,10 @@ export const checkEnableToMoveBlock = (currentBoard, direction) => ({type:CHECK_
 export default (() => {
   const initBoard = _chunk(new Array(200).fill(0), 10)
   const initState = {
-    position: 0,
+    position: {
+      x: 3,
+      y: 0,
+    },
     board: initBoard,
     moldShape: [],
   }
@@ -29,7 +32,7 @@ export default (() => {
     const getNextBoardState = (currentBoard) => {
       const copiedBoard = _chunk([..._flatten(currentBoard)], 10)
       const maxIndex = copiedBoard.length - 1
-      let position = state.position
+      let yPosition = state.position.y
       currentBoard.forEach((rows, i) => {
         if (i >= maxIndex) return
         rows.forEach((currentSector, j) => {
@@ -39,13 +42,16 @@ export default (() => {
             copiedBoard[i + 1][j] = currentSector
           }
           if (currentSector === blockStatus[1]) {
-            position = i + 1
+            yPosition = i + 1
           }
         })
       })
       return {
         board: copiedBoard,
-        position,
+        position: {
+          ...state.position,
+          y: yPosition,
+        },
       }
     }
     const nextBoardState = getNextBoardState(state.board)
@@ -57,7 +63,7 @@ export default (() => {
   const _restartBlock = (state, action) => {
     return {
       ...state,
-      position: initState.position,
+      position: initState.position.y,
     }
   }
   const _updateBoard = (preBoard, moldShape) => {
@@ -110,7 +116,7 @@ export default (() => {
 
 // selector
 export const getTransformedMoldShape = (preMoldShape, action) => {
-  const arrLen = preMoldShape.length - 1
+  const arrLen = preMoldShape.length
   const copiedMoldShape = _chunk(_flatten(preMoldShape), 4)
   
   for (let i = 0; i < arrLen; i++) {
@@ -118,8 +124,6 @@ export const getTransformedMoldShape = (preMoldShape, action) => {
       copiedMoldShape[j][arrLen -1 - i] = preMoldShape[i][j]
     }
   }
-  console.log(preMoldShape)
-  console.log(copiedMoldShape)
   return copiedMoldShape
 }
 
