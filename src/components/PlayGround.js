@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import BlockItemManager from './BlockItemManager';
 import GameBoard from './GameBoard';
 import {
   getTransformedMoldShape,

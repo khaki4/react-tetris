@@ -51,7 +51,7 @@ export default (() => {
     const nextBoardState = _calNextBoard(state.board, state.moldShape, state.position)
     return {
       ...state,
-      ...nextBoardState,
+      board: nextBoardState,
       position: {
         x: state.position.x,
         y: state.position.y + 1,
