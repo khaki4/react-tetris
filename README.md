@@ -1,5 +1,7 @@
 ## Tetris 만들기
 
+### Demo:
+[Click ver. 17.11.2 - Use key: w, a, s, d ](https://react-tetris-qeaklxthmc.now.sh/)
 ### todos:
  - [x] 키보드로 블럭 이동
  - [x] block 별로 변형 형태 구성
