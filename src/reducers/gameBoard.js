@@ -2,6 +2,8 @@ import { createSelector } from 'reselect';
 import _flatten from 'lodash/flatten'
 import _chunk from 'lodash/chunk'
 import _isNil from 'lodash/isNil'
+import _remove from 'lodash/remove'
+import _pull from 'lodash/pull'
 import { blockStatus } from '../lib/BlockMold'
 
 // Actions
@@ -11,6 +13,8 @@ export const SET_MOLD_SHAPE = 'SET_MOLD_SHAPE'
 export const SET_ACTIVE_TO_COMPLETE = 'SET_ACTIVE_TO_COMPLETE'
 export const CHECK_ENABLE_TO_MOVE_BLOCK = 'CHECK_ENABLE_TO_MOVE_BLOCK'
 export const CLEAR_ACTIVE_BLOCK = 'CLEAR_ACTIVE_BLOCK'
+export const MOVE_BLOCK = 'MOVE_BLOCK'
+export const BREAK_BLOCKS = 'BREAK_BLOCKS'
 
 // Action Creators
 export const moveTick = () => ({type: MOVE_TICK})
@@ -19,10 +23,12 @@ export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: mold
 export const setActiveToComplete = () => ({type: SET_ACTIVE_TO_COMPLETE})
 export const checkEnableToMoveBlock = (currentBoard, direction) => ({type:CHECK_ENABLE_TO_MOVE_BLOCK, payload: currentBoard, direction})
 export const clearActiveBlock = () => ({type: CLEAR_ACTIVE_BLOCK })
+export const moveBlock = (direction) => ({type: MOVE_BLOCK, payload: direction})
+export const breakBlocks = () => ({type: BREAK_BLOCKS})
 
 // reducer
 export default (() => {
-  const initBoard = _chunk(new Array(100).fill(0), 10)
+  const initBoard = _chunk(new Array(200).fill(0), 10)
   const initState = {
     position: {
       x: 3,
@@ -66,22 +72,10 @@ export default (() => {
       },
     }
   }
-  const _updateBoard = (preBoard, moldShape) => {
-    const copiedMold = _chunk([..._flatten(moldShape)], 4)
-    const halfPositionHelper = 3
-    moldShape.forEach((rows, i) => {
-      rows.forEach((sector, j)=> {
-        preBoard[i][j + halfPositionHelper] = copiedMold[i][j]
-      })
-    })
-    
-    return preBoard
-  }
   const _setMoldShape = (state, action) => {
     return {
       ...state,
       moldShape: action.payload,
-      board: _updateBoard(state.board, action.payload)
     }
   }
   const _setActiveToComplete = (state, action) => {
@@ -110,8 +104,56 @@ export default (() => {
       board: getClearedBoard(state)
     }
   }
-  const _checkEnableToMoveBlock = (state, action) => {
+  const _moveBlock = (state, direction) => {
+    const directionArray = [87, 65, 83, 68] // up, left, down, right
+    switch (direction) {
+      case directionArray[1]:
+        return {
+          ...state,
+          position: {
+            ...state.position,
+            x: state.position.x - 1,
+          }
+        }
+      case directionArray[2]:
+        return {
+          ...state,
+          position: {
+            ...state.position,
+            y: state.position.y + 1,
+          }
+        }
+      case directionArray[3]:
+        return {
+          ...state,
+          position: {
+            ...state.position,
+            x: state.position.x + 1,
+          }
+        }
+      default:
+        return state
+    }
+  }
+  const _breakBlocks = (state, action) => {
+    const getBokenBoard = (currenstBoard) => {
+      return currenstBoard.map((rows, i) => {
+        return rows.every(sector => {
+          return sector === blockStatus[3]
+        })
+      })
+    }
+    const fulledIndex = getBokenBoard(state.board)
+    const copiedBoard = [...state.board]
+    const fulledRows = fulledIndex.filter(item => item)
+    const fulledRowsRemovedBoard = _remove(copiedBoard, (item, index) => !fulledIndex[index])
 
+    const emptyRow = fulledRows.map(item => new Array(10).fill(0))
+    const nextBoard = [...emptyRow, ...fulledRowsRemovedBoard]
+    return {
+      ...state,
+      board: nextBoard
+    }
   }
   return (state = initState, action) => {
     switch (action.type) {
@@ -125,8 +167,10 @@ export default (() => {
         return _setActiveToComplete(state, action)
       case CLEAR_ACTIVE_BLOCK:
         return _clearActiveBlock(state, action)
-      case CHECK_ENABLE_TO_MOVE_BLOCK:
-        return _checkEnableToMoveBlock(state, action)
+      case MOVE_BLOCK:
+        return _moveBlock(state, action.payload)
+      case BREAK_BLOCKS:
+        return _breakBlocks(state, action)
       default:
         return state
     }
@@ -147,36 +191,67 @@ export const getTransformedMoldShape = (preMoldShape, action) => {
 }
 
 export const isEnableToMoveBlock = (currentGameBoard, direction) => {
+  const enableToMove = (currentGameBoard, coodinationAdder) => {
+    if (coodinationAdder === null) {
+      return true
+    }
+    const copiedBoard =[...currentGameBoard]
+    const maxIndex = copiedBoard.length - 1
+    const xAxisLength = copiedBoard[0].length
+    let isLimitedEnd = true
+    currentGameBoard.forEach((rows, i) => {
+      rows.forEach((currentSector, j) => {
+        const isNilNextBlockStatus = _isNil(copiedBoard[i + coodinationAdder.y])
+        if (i > maxIndex) {
+          isLimitedEnd = false
+          return
+        }
+        // 횡방향으로 이동시 게임 보드를 넘어가는지 체크
+        if (
+          currentSector === blockStatus[1]
+          && (j + coodinationAdder.x < 0 || j + coodinationAdder.x >= xAxisLength)
+        ) {
+          isLimitedEnd = false
+          return
+        }
+        if (currentSector === blockStatus[1] && isNilNextBlockStatus) {
+          isLimitedEnd = false
+          return
+        }
+        if (isNilNextBlockStatus) return
+        const nextSector = copiedBoard[i + coodinationAdder.y][j + coodinationAdder.x]
+        const activeBlock = blockStatus[1]
+        const completeBlock = blockStatus[3]
+        if (currentSector === activeBlock && nextSector === completeBlock) { // 현재 active sector &&
+          isLimitedEnd = false
+          return
+        }
+      })
+    })
+    return isLimitedEnd
+  }
+  let coodinationAdder = {}
   switch (direction) {
     case 'down':
-      const enableToMove = (currentGameBoard) => {
-        const copiedBoard =[...currentGameBoard]
-        const maxIndex = copiedBoard.length - 1
-        let isLimitedEnd = true
-        currentGameBoard.forEach((rows, i) => {
-          rows.forEach((currentSector, j) => {
-            const isNilNextBlockStatus = _isNil(copiedBoard[i + 1])
-            if (i > maxIndex) {
-              isLimitedEnd = false
-              return
-            }
-            if (currentSector === blockStatus[1] && isNilNextBlockStatus) {
-              isLimitedEnd = false
-              return
-            }
-            if (isNilNextBlockStatus) return
-            const nextSector = copiedBoard[i + 1][j]
-            const activeBlock = blockStatus[1]
-            const completeBlock = blockStatus[3]
-            if (currentSector === activeBlock && nextSector === completeBlock) { // 현재 active sector &&
-              isLimitedEnd = false
-              return
-            }
-          })
-        })
-        return isLimitedEnd
+      coodinationAdder = {
+        x: 0,
+        y: 1,
       }
-      return enableToMove(currentGameBoard)
+      return enableToMove(currentGameBoard, coodinationAdder)
+    case 'left':
+      coodinationAdder = {
+        x: -1,
+        y: 0,
+      }
+      return enableToMove(currentGameBoard, coodinationAdder)
+    case 'right':
+      coodinationAdder = {
+        x: 1,
+        y: 0,
+      }
+      return enableToMove(currentGameBoard, coodinationAdder)
+    case 'transform':
+      return enableToMove(currentGameBoard, null)
     default:
       return true
   }

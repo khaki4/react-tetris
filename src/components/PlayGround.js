@@ -8,7 +8,9 @@ import {
   setActiveToComplete,
   setBlockInitPosition,
   clearActiveBlock,
-  isEnableToMoveBlock
+  isEnableToMoveBlock,
+  moveBlock,
+  breakBlocks,
 } from '../reducers/gameBoard';
 import { moldShape } from '../lib/BlockMold';
 
@@ -29,7 +31,6 @@ class PlayGround extends PureComponent {
     this.MOVE_TICK = setInterval(() => {
       const isBoardBottom = this.props.position > this.LIMIT_TOP;
       const isPossibleMoveBlock = isEnableToMoveBlock(this.props.board, 'down');
-      console.log(isBoardBottom, isPossibleMoveBlock);
       if (isBoardBottom || !isPossibleMoveBlock) {
         clearInterval(this.MOVE_TICK);
         this.restartBlock();
@@ -41,16 +42,31 @@ class PlayGround extends PureComponent {
   };
   restartBlock = () => {
     this.props.setActiveToComplete();
+    this.props.breakBlocks()
     this.props.setMoldShape(moldShape());
     this.props.setBlockInitPosition();
     this.movePieceAuto();
   };
   handleKeyUp = e => {
-    switch (e.key) {
-      case 'w':
+    let checkResult = ''
+    switch (e.which) {
+      case 87: // up
+        checkResult = isEnableToMoveBlock(this.props.board, 'transform')
+        if (!checkResult) return
         this.props.setMoldShape(getTransformedMoldShape(this.props.moldShape));
         break;
+      case 65: // left
+        checkResult = isEnableToMoveBlock(this.props.board, 'left')
+        if (!checkResult) return
+      case 83: // down
+        checkResult = isEnableToMoveBlock(this.props.board, 'down')
+        if (!checkResult) return
+      case 68: // right
+        checkResult = isEnableToMoveBlock(this.props.board, 'right')
+        if (!checkResult) return
+        this.props.moveBlock(e.which)
       default:
+        console.log('checkResult:', checkResult)
         return;
     }
   };
@@ -74,6 +90,8 @@ export default connect(
     moveTick,
     setActiveToComplete,
     setBlockInitPosition,
-    clearActiveBlock
+    clearActiveBlock,
+    moveBlock,
+    breakBlocks,
   }
 )(PlayGround);
