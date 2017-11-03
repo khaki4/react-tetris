@@ -193,6 +193,7 @@ export const getTransformedMoldShape = (preMoldShape, action) => {
 export const isEnableToMoveBlock = (currentGameBoard, direction) => {
   const enableToMove = (currentGameBoard, coodinationAdder) => {
     if (coodinationAdder === null) {
+      // TODO: 변환된 블록으로 화면 업데이트후 보드 밖으로 나가는 값이 있는지 검사.
       return true
     }
     const copiedBoard =[...currentGameBoard]

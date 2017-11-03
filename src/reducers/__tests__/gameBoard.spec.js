@@ -1,6 +1,7 @@
 import reducer, * as fromGameBoard from '../gameBoard'
 import * as fromBlockMold from '../../lib/BlockMold'
 import _chunk from 'lodash/chunk'
+import { moveBlock } from '../gameBoard';
 
 describe('gameBoard Test', () => {
   let initBoard, expectedBoard, initState;
@@ -180,7 +181,29 @@ describe('gameBoard Test', () => {
           .toEqual(afterBlock4)
       })
     })
-    it('블록이 회전 이후 d')
+    it('블록이 회전 이후 게임 보드를 벗어나는 경우 isEnableToMoveBlock false 반환 해야 한다', () => {
+      const initBoard = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 3, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 3, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ]
+      const initState = {
+        position: {
+          x: 3,
+          y: 0,
+        },
+        board: initBoard,
+        moldShape: [],
+      }
+      expect(fromGameBoard.isEnableToMoveBlock(initBoard, {
+        type: 'transform',
+        moldShape:
+      }))
+        .toEqual(false)
+    })
   })
   describe('이동관련 테스트', () => {
     it('checkEnableToMoveBlock: 블록이 이동 한 후 complete 블록과 겹치치 않으면 isEnableToMoveBlock true 반환 해야 한다', () => {
