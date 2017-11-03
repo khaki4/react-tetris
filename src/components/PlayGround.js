@@ -11,14 +11,17 @@ import {
   clearActiveBlock,
   isEnableToMoveBlock,
   moveBlock,
-  breakBlocks
+  breakBlocks,
+  checkEnableToMove,
+  operateMoveFlow,
+  operateTransformFlow,
 } from '../reducers/gameBoard';
 import { moldShape } from '../lib/BlockMold';
 
 class PlayGround extends PureComponent {
   constructor(props) {
     super(props);
-    this.LIMIT_TOP = 18;
+    this.LIMIT_TOP = this.props.board.length;
     this.TICK_TIME_INTERVAL = 300
   }
   componentDidMount() {
@@ -31,8 +34,10 @@ class PlayGround extends PureComponent {
   }
   movePieceAuto = () => {
     this.MOVE_TICK = setInterval(() => {
-      const isBoardBottom = this.props.position > this.LIMIT_TOP;
-      const isPossibleMoveBlock = isEnableToMoveBlock(this.props.board, 'down');
+      const limit = this.LIMIT_TOP
+      const position = this.props.position
+      const isBoardBottom = position > limit;
+      const isPossibleMoveBlock = isEnableToMoveBlock(this.props.board, 83);
       if (isBoardBottom || !isPossibleMoveBlock) {
         clearInterval(this.MOVE_TICK);
         this.restartBlock();
@@ -50,29 +55,18 @@ class PlayGround extends PureComponent {
     this.movePieceAuto();
   };
   handleKeyUp = e => {
-    let checkResult = '';
     switch (e.which) {
       case 87: // up
-        const transformedMoldShape = getTransformedMoldShape(this.props.moldShape)
-        const moldSize = getBlockSize(transformedMoldShape)
-        checkResult = isEnableToMoveBlock(this.props.board, 'up', moldSize, this.props.xPosition);
-        if (!checkResult) return;
-        this.props.setMoldShape(transformedMoldShape);
+        this.props.operateTransformFlow()
         break;
       case 65: // left
-        checkResult = isEnableToMoveBlock(this.props.board, 'left');
-        if (!checkResult) break;
-        this.props.moveBlock(e.which);
+        this.props.operateMoveFlow(e.which)
         break;
       case 83: // down
-        checkResult = isEnableToMoveBlock(this.props.board, 'down');
-        if (!checkResult) break;
-        this.props.moveBlock(e.which);
+        this.props.operateMoveFlow(e.which)
         break;
       case 68: // right
-        checkResult = isEnableToMoveBlock(this.props.board, 'right');
-        if (!checkResult) break;
-        this.props.moveBlock(e.which);
+        this.props.operateMoveFlow(e.which)
         break;
       default:
         return;
@@ -93,6 +87,8 @@ export default connect(
     board: state.play.board,
     position: state.play.position.y,
     xPosition: state.play.position.x,
+    transformedMoldShape: getTransformedMoldShape(state.play.moldShape),
+    enableToMoveBlock: state.play.enableToMoveBlock,
   }),
   {
     setMoldShape,
@@ -101,6 +97,9 @@ export default connect(
     setBlockInitPosition,
     clearActiveBlock,
     moveBlock,
-    breakBlocks
+    breakBlocks,
+    checkEnableToMove,
+    operateMoveFlow,
+    operateTransformFlow,
   }
 )(PlayGround);

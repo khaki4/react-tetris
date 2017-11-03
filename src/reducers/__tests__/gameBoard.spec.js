@@ -236,6 +236,7 @@ describe('gameBoard Test', () => {
     })
   })
   describe('이동관련 테스트', () => {
+    const directionArray = [87, 65, 83, 68] // up, left, down, right
     it('checkEnableToMoveBlock: 블록이 이동 한 후 complete 블록과 겹치치 않으면 isEnableToMoveBlock true 반환 해야 한다', () => {
       initBoard[17][0] = fromBlockMold.blockStatus[1]
       initBoard[17][1] = fromBlockMold.blockStatus[1]
@@ -244,7 +245,7 @@ describe('gameBoard Test', () => {
       initBoard[19][1] = fromBlockMold.blockStatus[3]
       initBoard[19][2] = fromBlockMold.blockStatus[3]
 
-      expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'down'))
+      expect(fromGameBoard.isEnableToMoveBlock(initBoard, directionArray[2]))
         .toEqual(true)
     })
     it('checkEnableToMoveBlock: 블록이 이동 한 후 complete 블록과 겹쳐지면 isEnableToMoveBlock false 반환 해야 한다', () => {
@@ -255,7 +256,7 @@ describe('gameBoard Test', () => {
       initBoard[19][1] = fromBlockMold.blockStatus[3]
       initBoard[19][2] = fromBlockMold.blockStatus[3]
 
-      expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'down'))
+      expect(fromGameBoard.isEnableToMoveBlock(initBoard, directionArray[2]))
         .toEqual(false)
     })
     it('MOVE_TICK 으로 position.y 가 1 늘어나야 한다', () => {
@@ -335,7 +336,7 @@ describe('gameBoard Test', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
-        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'left'))
+        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 65))
           .toEqual(false)
       })
       it('a키를 눌렀을때 블록이 게임보드를 넘어가는 경우 움직이지 않아야 한다', () => {
@@ -347,7 +348,7 @@ describe('gameBoard Test', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
-        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'left'))
+        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 65))
           .toEqual(false)
       })
       it('d키를 눌렀을때 블록이 이미쌓여있는 블록과 만나면 isEnableToMoveBlock false 반환 해야 한다', () => {
@@ -359,7 +360,7 @@ describe('gameBoard Test', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
-        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'right'))
+        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 68))
           .toEqual(false)
       })
       it('d키를 눌렀을때 블록이 게임보드를 넘어가는 경우 움직이지 않아야 한다', () => {
@@ -371,7 +372,7 @@ describe('gameBoard Test', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
-        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'right'))
+        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 68))
           .toEqual(false)
       })
     })
