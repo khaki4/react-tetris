@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import GameBoard from './GameBoard';
-import { getBlockSize } from '../lib/BlockMold';
+import BoardMask from './BoardMask'
 import {
   getTransformedMoldShape,
   setMoldShape,
@@ -18,11 +18,14 @@ import {
 } from '../reducers/gameBoard';
 import { moldShape } from '../lib/BlockMold';
 
+
+
 class PlayGround extends PureComponent {
   constructor(props) {
     super(props);
     this.LIMIT_TOP = this.props.board.length;
     this.TICK_TIME_INTERVAL = 300
+    this.MASK_HEIGHT = 5
   }
   componentDidMount() {
     document.addEventListener('keyup', this.handleKeyUp);
@@ -40,6 +43,10 @@ class PlayGround extends PureComponent {
       const isPossibleMoveBlock = isEnableToMoveBlock(this.props.board, 83);
       if (isBoardBottom || !isPossibleMoveBlock) {
         clearInterval(this.MOVE_TICK);
+        if (position < this.MASK_HEIGHT) {
+          alert('Game Over')
+          return
+        }
         this.restartBlock();
         return;
       }
@@ -75,6 +82,7 @@ class PlayGround extends PureComponent {
   render() {
     return (
       <div className="playGround_wrapper">
+        <BoardMask />
         <GameBoard board={this.props.board} />
       </div>
     );
@@ -89,6 +97,7 @@ export default connect(
     xPosition: state.play.position.x,
     transformedMoldShape: getTransformedMoldShape(state.play.moldShape),
     enableToMoveBlock: state.play.enableToMoveBlock,
+    gameover: state.play.gameover,
   }),
   {
     setMoldShape,

@@ -35,7 +35,7 @@ export const renderCurrentBoard = () => ({type: RENDER_CURRENT_BOARD})
 // reducer
 const directionArray = [87, 65, 83, 68] // up, left, down, right
 export default (() => {
-  const initBoard = _chunk(new Array(200).fill(0), 10)
+  const initBoard = _chunk(new Array(15 * 10).fill(0), 10)
   const initState = {
     position: {
       x: 3,

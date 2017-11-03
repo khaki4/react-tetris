@@ -32,3 +32,9 @@
   width: 200px;
   height: 4000px;
 }
+.boardMask {
+  position: absolute;
+  width: 200px;
+  height: 100px;
+  background: #fff;
+}
