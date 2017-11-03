@@ -181,27 +181,57 @@ describe('gameBoard Test', () => {
           .toEqual(afterBlock4)
       })
     })
-    it('블록이 회전 이후 게임 보드를 벗어나는 경우 isEnableToMoveBlock false 반환 해야 한다', () => {
+    it('블록의 횡 시작, 끝 좌표를 반환 해야 한다', () => {
+      const block1 = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [1, 1, 1, 1],
+        [0, 0, 0, 0],
+      ]
+      const block2 = [
+        [0, 0, 1, 0],
+        [0, 1, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 0],
+      ]
+      expect(fromBlockMold.getBlockSize(block1))
+        .toEqual({
+          x: {
+            start: 0,
+            end: 3,
+          }
+        })
+      expect(fromBlockMold.getBlockSize(block2))
+        .toEqual({
+          x: {
+            start: 1,
+            end: 2,
+          }
+        })
+    })
+    it.skip('블록이 회전 이후 게임 보드를 벗어나는 경우 isEnableToMoveBlock false 반환 해야 한다', () => {
       const initBoard = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [0, 0, 0, 0, 3, 0, 0, 0, 0, 1],
-        [0, 0, 0, 0, 3, 0, 0, 0, 0, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 3, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 3, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ]
       const initState = {
         position: {
-          x: 3,
+          x: 8,
           y: 0,
         },
         board: initBoard,
-        moldShape: [],
+        moldShape: [
+          [1, 1, 1, 1],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
       }
-      expect(fromGameBoard.isEnableToMoveBlock(initBoard, {
-        type: 'transform',
-        moldShape:
-      }))
+      expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'up', fromBlockMold.getBlockSize(initState.moldShape)))
         .toEqual(false)
     })
   })

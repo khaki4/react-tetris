@@ -28,7 +28,7 @@ export const breakBlocks = () => ({type: BREAK_BLOCKS})
 
 // reducer
 export default (() => {
-  const initBoard = _chunk(new Array(200).fill(0), 10)
+  const initBoard = _chunk(new Array(400).fill(0), 10)
   const initState = {
     position: {
       x: 3,
@@ -42,8 +42,13 @@ export default (() => {
       const copiedMold = _chunk([..._flatten(moldShape)], 4)
       moldShape.forEach((rows, i) => {
         rows.forEach((sector, j)=> {
-          // 게임 보드 밖의 값을 조회할때
+          // 게임 보드 밖의 값을 조회할 때
           if (_isNil(preBoard[i + position.y]) || _isNil(preBoard[i + position.y][j + position.x])) return
+          // 블록이 게임 보드 밖으로 나갔을 때
+          if (sector === blockStatus[1] && _isNil(preBoard[i + position.y][j + position.x])) {
+            console.log('block is outside!!!')
+            return
+          }
           // 블록의 비어있는 부분일 경우 게임보드 업데이트를 하지 않는다.
           if (sector === blockStatus[0]) {
             return
@@ -190,12 +195,8 @@ export const getTransformedMoldShape = (preMoldShape, action) => {
   return copiedMoldShape
 }
 
-export const isEnableToMoveBlock = (currentGameBoard, direction) => {
+export const isEnableToMoveBlock = (currentGameBoard, direction, moldSize, xPosition) => {
   const enableToMove = (currentGameBoard, coodinationAdder) => {
-    if (coodinationAdder === null) {
-      // TODO: 변환된 블록으로 화면 업데이트후 보드 밖으로 나가는 값이 있는지 검사.
-      return true
-    }
     const copiedBoard =[...currentGameBoard]
     const maxIndex = copiedBoard.length - 1
     const xAxisLength = copiedBoard[0].length
@@ -251,8 +252,11 @@ export const isEnableToMoveBlock = (currentGameBoard, direction) => {
         y: 0,
       }
       return enableToMove(currentGameBoard, coodinationAdder)
-    case 'transform':
-      return enableToMove(currentGameBoard, null)
+    case 'up':
+      if (xPosition === undefined || xPosition === null) return
+      const enAbleToMoveAboutStart = xPosition + moldSize.x.start > -1
+      const enAbleToMoveAboutEnd = xPosition + moldSize.x.end < currentGameBoard[0].length
+      return enAbleToMoveAboutStart && enAbleToMoveAboutEnd
     default:
       return true
   }

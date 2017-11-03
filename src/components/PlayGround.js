@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import GameBoard from './GameBoard';
+import { getBlockSize } from '../lib/BlockMold';
 import {
   getTransformedMoldShape,
   setMoldShape,
@@ -18,6 +19,7 @@ class PlayGround extends PureComponent {
   constructor(props) {
     super(props);
     this.LIMIT_TOP = 18;
+    this.TICK_TIME_INTERVAL = 300
   }
   componentDidMount() {
     document.addEventListener('keyup', this.handleKeyUp);
@@ -38,7 +40,7 @@ class PlayGround extends PureComponent {
       }
       this.props.clearActiveBlock();
       this.props.moveTick();
-    }, 300);
+    }, this.TICK_TIME_INTERVAL);
   };
   restartBlock = () => {
     this.props.setActiveToComplete();
@@ -51,22 +53,28 @@ class PlayGround extends PureComponent {
     let checkResult = '';
     switch (e.which) {
       case 87: // up
-        checkResult = isEnableToMoveBlock(this.props.board, 'transform');
+        const transformedMoldShape = getTransformedMoldShape(this.props.moldShape)
+        const moldSize = getBlockSize(transformedMoldShape)
+        checkResult = isEnableToMoveBlock(this.props.board, 'up', moldSize, this.props.xPosition);
         if (!checkResult) return;
-        this.props.setMoldShape(getTransformedMoldShape(this.props.moldShape));
+        this.props.setMoldShape(transformedMoldShape);
         break;
       case 65: // left
         checkResult = isEnableToMoveBlock(this.props.board, 'left');
-        if (!checkResult) return;
+        if (!checkResult) break;
+        this.props.moveBlock(e.which);
+        break;
       case 83: // down
         checkResult = isEnableToMoveBlock(this.props.board, 'down');
-        if (!checkResult) return;
+        if (!checkResult) break;
+        this.props.moveBlock(e.which);
+        break;
       case 68: // right
         checkResult = isEnableToMoveBlock(this.props.board, 'right');
-        if (!checkResult) return;
+        if (!checkResult) break;
         this.props.moveBlock(e.which);
+        break;
       default:
-        console.log('checkResult:', checkResult);
         return;
     }
   };
@@ -83,7 +91,8 @@ export default connect(
   state => ({
     moldShape: state.play.moldShape,
     board: state.play.board,
-    position: state.play.position.y
+    position: state.play.position.y,
+    xPosition: state.play.position.x,
   }),
   {
     setMoldShape,
