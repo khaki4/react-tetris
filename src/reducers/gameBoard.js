@@ -11,7 +11,6 @@ export const MOVE_TICK = 'MOVE_TICK'
 export const SET_BLOCK_INIT_POSITION = 'SET_BLOCK_INIT_POSITION'
 export const SET_MOLD_SHAPE = 'SET_MOLD_SHAPE'
 export const SET_ACTIVE_TO_COMPLETE = 'SET_ACTIVE_TO_COMPLETE'
-export const CHECK_ENABLE_TO_MOVE_BLOCK = 'CHECK_ENABLE_TO_MOVE_BLOCK'
 export const CLEAR_ACTIVE_BLOCK = 'CLEAR_ACTIVE_BLOCK'
 export const MOVE_BLOCK = 'MOVE_BLOCK'
 export const BREAK_BLOCKS = 'BREAK_BLOCKS'
@@ -21,7 +20,6 @@ export const moveTick = () => ({type: MOVE_TICK})
 export const setBlockInitPosition = () => ({type: SET_BLOCK_INIT_POSITION})
 export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: moldShape})
 export const setActiveToComplete = () => ({type: SET_ACTIVE_TO_COMPLETE})
-export const checkEnableToMoveBlock = (currentBoard, direction) => ({type:CHECK_ENABLE_TO_MOVE_BLOCK, payload: currentBoard, direction})
 export const clearActiveBlock = () => ({type: CLEAR_ACTIVE_BLOCK })
 export const moveBlock = (direction) => ({type: MOVE_BLOCK, payload: direction})
 export const breakBlocks = () => ({type: BREAK_BLOCKS})

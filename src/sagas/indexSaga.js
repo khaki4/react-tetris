@@ -1,8 +1,8 @@
 import { fork } from 'redux-saga/effects';
-import testSaga from "./testSaga";
+import keyboardEvent from "./keyboardEventSaga";
 
 const sagas = [
-  ...testSaga,
+  ...keyboardEvent,
 ]
 
 export default function* root() {
