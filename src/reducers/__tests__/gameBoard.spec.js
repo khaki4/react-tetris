@@ -502,3 +502,8 @@ describe('gameBoard Test', () => {
     })
   })
 })
+describe.only('score 관련 Test', () => {
+  it('1000 마다 다음레벨로 넘어가야 한다', () => {
+  
+  })
+})

@@ -12,9 +12,7 @@ import {
   setBlockInitPosition,
   clearActiveBlock,
   isEnableToMoveBlock,
-  moveBlock,
   breakBlocks,
-  checkEnableToMove,
   operateMoveFlow,
   operateTransformFlow,
 } from '../reducers/gameBoard';
@@ -46,7 +44,7 @@ class PlayGround extends PureComponent {
       }
       this.props.clearActiveBlock()
       this.props.operateMoveFlow(keyDirection.DOWN)
-    }, TICK_TIME_INTERVAL);
+    }, parseInt(TICK_TIME_INTERVAL - TICK_TIME_INTERVAL * this.props.scoreBoard.level * 0.1));
   }
   restartBlock = () => {
     this.props.setActiveToComplete();
@@ -76,7 +74,7 @@ class PlayGround extends PureComponent {
   render() {
     return (
       <div className="playGround_wrapper">
-        <BoardMask />
+        <BoardMask scoreBoard={this.props.scoreBoard} />
         <GameBoard board={this.props.board} />
         <NextBlockSection nextBlock={this.props.nextMoldShape} />
       </div>
@@ -94,6 +92,7 @@ export default connect(
     transformedMoldShape: getTransformedMoldShape(state.play.moldShape),
     enableToMoveBlock: state.play.enableToMoveBlock,
     gameover: state.play.gameover,
+    scoreBoard: state.play.scoreBoard,
   }),
   {
     setMoldShape,
@@ -102,9 +101,7 @@ export default connect(
     setActiveToComplete,
     setBlockInitPosition,
     clearActiveBlock,
-    moveBlock,
     breakBlocks,
-    checkEnableToMove,
     operateMoveFlow,
     operateTransformFlow,
   }

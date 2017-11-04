@@ -1,14 +1,19 @@
 ## Tetris 만들기
 
 ### Demo:
-[Click ver. 17.11.2 - Use key: w, a, s, d ](https://react-tetris-qeaklxthmc.now.sh/)
+#### Only Keyboard available
+ - ROTATE - 'w'
+ - DOWN - 's'
+ - Left - 'a'
+ - RIGHT - 'd'
+[Click ver. 17.11.4](https://react-tetris-qeaklxthmc.now.sh/)
 ### todos:
  - [x] 키보드로 블럭 이동
  - [x] block 별로 변형 형태 구성
  - [x] 바닥에 닿았을때 블럭 쌓기
  - [x] 바닥에 닿았을때 블럭 클리어 연산
  - [x] 다음 블록 보여주기
- - [ ] 스코어 표시
+ - [x] 스코어 표시
  - [ ] pause / start 기능
 
 ### bugs:
@@ -18,5 +23,4 @@
  - [x] 바닥에 닿고 한번의 틱 이후에 쌓이게 하기 
  - [x] 회전 이후 게임 보드 밖으로 나가는 경우
  - [x] 쌓여진 블록 때문에 회전이 불가능할때도 회전하는 경우
- - [ ] 블록 회전 경로에 쌓인 블록이 있는경우 회전 불가해야 한다
  

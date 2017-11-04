@@ -31,7 +31,6 @@ export const moveBlock = (direction) => ({type: MOVE_BLOCK, payload: direction})
 export const breakBlocks = () => ({type: BREAK_BLOCKS})
 export const operateMoveFlow = (keyCode) => ({type: OPERATE_MOVE_FLOW, payload: keyCode})
 export const operateTransformFlow = () => ({type: OPERATE_TRANSFORM_FLOW})
-export const checkEnableToMove = (enableToMove) => ({type: CHECK_ENABLE_TO_MOVE, payload: enableToMove})
 export const renderCurrentBoard = () => ({type: RENDER_CURRENT_BOARD})
 
 // reducer
@@ -73,6 +72,11 @@ export default (() => {
     moldShape: moldShape(),
     nextMoldShape: moldShape(),
     enableToMoveBlock: true,
+    scoreBoard: {
+      score: 0,
+      level: 1,
+      breakLines: 0,
+    }
   }
   const _moveTick = (state, action) => {
     const nextBoardState = genNextBoard(state.board, state.moldShape, state.position)
@@ -162,6 +166,21 @@ export default (() => {
         return state
     }
   }
+  const _updateScore = (state, breakRowsCount) => {
+    const {score, level, breakLines} = state
+    const getScore = () => breakRowsCount > 0
+      ? parseInt(score + level * Math.sqrt(Math.pow(breakRowsCount * 80, 2)), 10)
+      : score
+    const nextScore = getScore()
+    const getLevel = () => parseInt(nextScore / 1000, 10) + 1
+    const getBreakRosCount = () => breakLines + breakRowsCount
+    return {
+      ...state,
+      score: nextScore,
+      level: getLevel(),
+      breakLines: getBreakRosCount(),
+    }
+  }
   const _breakBlocks = (state, action) => {
     const getBokenBoard = (currenstBoard) => {
       return currenstBoard.map((rows, i) => {
@@ -177,15 +196,11 @@ export default (() => {
 
     const emptyRow = fulledRows.map(item => new Array(10).fill(0))
     const nextBoard = [...emptyRow, ...fulledRowsRemovedBoard]
+    const breakRowsCount = fulledRows.length
     return {
       ...state,
-      board: nextBoard
-    }
-  }
-  const _checkEnableToMove = (state, action) => {
-    return {
-      ...state,
-      enableToMoveBlock: action.payload,
+      board: nextBoard,
+      scoreBoard: _updateScore(state.scoreBoard, breakRowsCount)
     }
   }
   const _renderCurrentBoard = (state, action) => {
@@ -213,8 +228,6 @@ export default (() => {
         return _moveBlock(state, action.payload)
       case BREAK_BLOCKS:
         return _breakBlocks(state, action)
-      case CHECK_ENABLE_TO_MOVE:
-        return _checkEnableToMove(state, action)
       case RENDER_CURRENT_BOARD:
         return _renderCurrentBoard(state, action)
       default:
