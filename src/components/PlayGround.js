@@ -42,14 +42,15 @@ class PlayGround extends PureComponent {
         this.restartBlock();
         return;
       }
+      this.props.clearActiveBlock()
       this.props.operateMoveFlow(keyDirection.DOWN)
     }, TICK_TIME_INTERVAL);
-  };
+  }
   restartBlock = () => {
     this.props.setActiveToComplete();
     this.props.breakBlocks();
-    this.props.setMoldShape(moldShape());
     this.props.setBlockInitPosition();
+    this.props.setMoldShape(moldShape());
     this.movePieceAuto();
   };
   handleKeyUp = e => {
@@ -73,7 +74,7 @@ class PlayGround extends PureComponent {
   render() {
     return (
       <div className="playGround_wrapper">
-        <BoardMask />
+        {/*<BoardMask />*/}
         <GameBoard board={this.props.board} />
       </div>
     );
