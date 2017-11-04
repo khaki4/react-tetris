@@ -55,26 +55,39 @@ export const moldShape = () => {
 }
 
 export const getBlockSize = (block) => {
-  const startInitValue = block.length
+  const startInitValueX = block[0].length
+  const startInitValueY = block.length
   const size = {
     x: {
-      start: startInitValue,
+      start: startInitValueX,
+      end: 0,
+    },
+    y: {
+      start: startInitValueY,
       end: 0,
     }
   }
   for (let rows of block) {
-
     // x.start
     const rowsFirstIndex = _findIndex(rows, v => v === 1)
     if (rowsFirstIndex !== -1 && rowsFirstIndex < size.x.start) {
       size.x.start = rowsFirstIndex
     }
-
     // x.end
     const rowsLastIndex = _findLastIndex(rows, v => v === 1)
     if (rowsLastIndex > size.x.end) {
       size.x.end = rowsLastIndex
     }
+  }
+  
+  const blockAboutColumn = block.map(rows => {
+    return rows.some(sector => sector === blockStatus[1])
+  })
+  const columnsFirstIndex = _findIndex(blockAboutColumn, v => v)
+  const columnsLastIndex = _findLastIndex(blockAboutColumn, v => v)
+  size.y = {
+    start: columnsFirstIndex,
+    end: columnsLastIndex,
   }
   return size
 }

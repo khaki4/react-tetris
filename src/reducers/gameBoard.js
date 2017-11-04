@@ -287,10 +287,14 @@ export const isEnableToMoveBlock = (currentGameBoard, direction, moldSize, posit
         x: 0,
         y: 0,
       }
-      const enAbleToMoveAboutStart = position.x + moldSize.x.start > -1
-      const enAbleToMoveAboutEnd = position.x + moldSize.x.end < currentGameBoard[0].length
-      if (enAbleToMoveAboutStart && enAbleToMoveAboutEnd) {
-        return genNextBoard(currentGameBoard, transformedMoldShape, position)
+      const enAbleToMoveAboutStartX = position.x + moldSize.x.start > -1
+      const enAbleToMoveAboutEndX = position.x + moldSize.x.end < currentGameBoard[0].length
+      const enAbleToMoveAboutStartY = position.y + moldSize.y.start > -1
+      const enAbleToMoveAboutEndY = position.y + moldSize.y.end < currentGameBoard.length
+      
+      if (enAbleToMoveAboutStartX && enAbleToMoveAboutEndX && enAbleToMoveAboutStartY && enAbleToMoveAboutEndY) {
+        const resultOfGenBoard = genNextBoard(currentGameBoard, transformedMoldShape, position)
+        return !_isNil(resultOfGenBoard)
       }
       return false
     default:
