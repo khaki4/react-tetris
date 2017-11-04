@@ -4,12 +4,13 @@ import _chunk from 'lodash/chunk'
 import _isNil from 'lodash/isNil'
 import _remove from 'lodash/remove'
 import { keyDirection, GAMEBOARD_X_LENGTH, GAMEBOARD_Y_LENGTH } from '../lib/Constants'
-import { blockStatus } from '../lib/BlockMold'
+import { blockStatus, moldShape } from '../lib/BlockMold'
 
 // Actions
 export const MOVE_TICK = 'MOVE_TICK'
 export const SET_BLOCK_INIT_POSITION = 'SET_BLOCK_INIT_POSITION'
 export const SET_MOLD_SHAPE = 'SET_MOLD_SHAPE'
+export const SET_NEXT_MOLD_SHAPE = 'SET_NEXT_MOLD_SHAPE'
 export const SET_ACTIVE_TO_COMPLETE = 'SET_ACTIVE_TO_COMPLETE'
 export const CLEAR_ACTIVE_BLOCK = 'CLEAR_ACTIVE_BLOCK'
 export const MOVE_BLOCK = 'MOVE_BLOCK'
@@ -23,6 +24,7 @@ export const RENDER_CURRENT_BOARD = 'RENDER_CURRENT_BOARD'
 export const moveTick = () => ({type: MOVE_TICK})
 export const setBlockInitPosition = () => ({type: SET_BLOCK_INIT_POSITION})
 export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: moldShape})
+export const setNextMoldShape = (moldShape) => ({type: SET_NEXT_MOLD_SHAPE, payload: moldShape})
 export const setActiveToComplete = () => ({type: SET_ACTIVE_TO_COMPLETE})
 export const clearActiveBlock = () => ({type: CLEAR_ACTIVE_BLOCK })
 export const moveBlock = (direction) => ({type: MOVE_BLOCK, payload: direction})
@@ -68,7 +70,8 @@ export default (() => {
       y: 0,
     },
     board: initBoard,
-    moldShape: [],
+    moldShape: moldShape(),
+    nextMoldShape: moldShape(),
     enableToMoveBlock: true,
   }
   const _moveTick = (state, action) => {
@@ -94,6 +97,13 @@ export default (() => {
     return {
       ...state,
       moldShape: action.payload,
+    }
+  }
+  const _setNextMoldShape = (state, action) => {
+    return {
+      ...state,
+      moldShape: [...state.nextMoldShape],
+      nextMoldShape: action.payload,
     }
   }
   const _setActiveToComplete = (state, action) => {
@@ -193,6 +203,8 @@ export default (() => {
         return _moveTick(state, action)
       case SET_MOLD_SHAPE:
         return _setMoldShape(state, action)
+      case SET_NEXT_MOLD_SHAPE:
+        return _setNextMoldShape(state, action)
       case SET_ACTIVE_TO_COMPLETE:
         return _setActiveToComplete(state, action)
       case CLEAR_ACTIVE_BLOCK:

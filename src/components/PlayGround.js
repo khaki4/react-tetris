@@ -2,9 +2,11 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import GameBoard from './GameBoard';
 import BoardMask from './BoardMask'
+import NextBlockSection from './NextBlockSection'
 import {
   getTransformedMoldShape,
   setMoldShape,
+  setNextMoldShape,
   moveTick,
   setActiveToComplete,
   setBlockInitPosition,
@@ -50,7 +52,7 @@ class PlayGround extends PureComponent {
     this.props.setActiveToComplete();
     this.props.breakBlocks();
     this.props.setBlockInitPosition();
-    this.props.setMoldShape(moldShape());
+    this.props.setNextMoldShape(moldShape())
     this.movePieceAuto();
   };
   handleKeyUp = e => {
@@ -74,8 +76,9 @@ class PlayGround extends PureComponent {
   render() {
     return (
       <div className="playGround_wrapper">
-        {/*<BoardMask />*/}
+        <BoardMask />
         <GameBoard board={this.props.board} />
+        <NextBlockSection nextBlock={this.props.nextMoldShape} />
       </div>
     );
   }
@@ -84,6 +87,7 @@ class PlayGround extends PureComponent {
 export default connect(
   state => ({
     moldShape: state.play.moldShape,
+    nextMoldShape: state.play.nextMoldShape,
     board: state.play.board,
     position: state.play.position.y,
     xPosition: state.play.position.x,
@@ -93,6 +97,7 @@ export default connect(
   }),
   {
     setMoldShape,
+    setNextMoldShape,
     moveTick,
     setActiveToComplete,
     setBlockInitPosition,
