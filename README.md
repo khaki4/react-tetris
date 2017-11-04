@@ -1,6 +1,6 @@
 ## Tetris 만들기
 
-### Demo: [Click ver. 17.11.4](https://react-tetris-qeaklxthmc.now.sh/)
+### Demo: [Click ver. 17.11.4](https://react-tetris-pbtolxbseb.now.sh)
 #### Only Keyboard available
  - ROTATE - 'w'
  - DOWN - 's'
