@@ -1,17 +1,12 @@
 import { call, put, take, select, throttle } from 'redux-saga/effects';
 import * as fromGameBoard from '../reducers/gameBoard';
 import { getBlockSize } from '../lib/BlockMold'
-
-function* moveHorizontalBlock(action) {
-  yield console.log('test!!')
-  yield put(fromGameBoard.moveBlock(action.payload))
-}
+import { keyDirection } from '../lib/Constants'
 
 function* workMoveFlow(action) {
   const getBoard = (state) => state.play.board
   const board = yield select(getBoard)
   const enableToMoveBlock = yield fromGameBoard.isEnableToMoveBlock(board, action.payload);
-  console.log(enableToMoveBlock)
   if (!enableToMoveBlock) return;
   yield put(fromGameBoard.moveBlock(action.payload));
   yield put(fromGameBoard.clearActiveBlock())
@@ -27,8 +22,8 @@ function* workTransformFlow() {
   const transformedMoldShape = yield fromGameBoard.getTransformedMoldShape(moldShape)
   const moldSize = yield getBlockSize(transformedMoldShape)
   const board = yield select(state => state.play.board)
-  const xPosition = yield select(state => state.play.position.x)
-  const enableToMoveBlock = yield fromGameBoard.isEnableToMoveBlock(board, 87, moldSize, xPosition);
+  const position = yield select(state => state.play.position)
+  const enableToMoveBlock = yield fromGameBoard.isEnableToMoveBlock(board, keyDirection.UP, moldSize, position, transformedMoldShape);
   if (!enableToMoveBlock) return;
   yield put(fromGameBoard.setMoldShape(transformedMoldShape));
   yield put(fromGameBoard.clearActiveBlock())

@@ -3,7 +3,7 @@ import _flatten from 'lodash/flatten'
 import _chunk from 'lodash/chunk'
 import _isNil from 'lodash/isNil'
 import _remove from 'lodash/remove'
-import _pull from 'lodash/pull'
+import { keyDirection, GAMEBOARD_X_LENGTH, GAMEBOARD_Y_LENGTH } from '../lib/Constants'
 import { blockStatus } from '../lib/BlockMold'
 
 // Actions
@@ -33,9 +33,35 @@ export const checkEnableToMove = (enableToMove) => ({type: CHECK_ENABLE_TO_MOVE,
 export const renderCurrentBoard = () => ({type: RENDER_CURRENT_BOARD})
 
 // reducer
-const directionArray = [87, 65, 83, 68] // up, left, down, right
+const genNextBoard = (preBoard, moldShape, position) => {
+  const copiedMold = _chunk([..._flatten(moldShape)], moldShape.length)
+  let isValidBoard = true
+  moldShape.forEach((rows, i) => {
+    rows.forEach((sector, j)=> {
+      // 게임 보드 밖의 값을 조회할 때
+      if (_isNil(preBoard[i + position.y]) || _isNil(preBoard[i + position.y][j + position.x])) return
+      // 블록이 게임 보드 밖으로 나갔을 때
+      if (sector === blockStatus[1] && _isNil(preBoard[i + position.y][j + position.x])) {
+        console.log('block is outside!!!')
+        return
+      }
+      // 블록의 비어있는 부분일 경우 게임보드 업데이트를 하지 않는다.
+      if (sector === blockStatus[0]) {
+        return
+      }
+      // 블록이 쌓여있는 블록과 겹칠 경우 false를 리턴한다.
+      if (sector === blockStatus[1] && preBoard[i + position.y][j + position.x] === blockStatus[3]) {
+        isValidBoard = false
+        return
+      }
+      preBoard[i + position.y][j + position.x] = copiedMold[i][j]
+    })
+  })
+  
+  return isValidBoard ? preBoard : null
+}
 export default (() => {
-  const initBoard = _chunk(new Array(15 * 10).fill(0), 10)
+  const initBoard = _chunk(new Array(GAMEBOARD_X_LENGTH * GAMEBOARD_Y_LENGTH).fill(blockStatus[0]), GAMEBOARD_X_LENGTH)
   const initState = {
     position: {
       x: 3,
@@ -45,30 +71,8 @@ export default (() => {
     moldShape: [],
     enableToMoveBlock: true,
   }
-  const _calNextBoard = (preBoard, moldShape, position) => {
-    const copiedMold = _chunk([..._flatten(moldShape)], moldShape.length)
-    moldShape.forEach((rows, i) => {
-      rows.forEach((sector, j)=> {
-        // 게임 보드 밖의 값을 조회할 때
-        if (_isNil(preBoard[i + position.y]) || _isNil(preBoard[i + position.y][j + position.x])) return
-        // 블록이 게임 보드 밖으로 나갔을 때
-        if (sector === blockStatus[1] && _isNil(preBoard[i + position.y][j + position.x])) {
-          console.log('block is outside!!!')
-          return
-        }
-        // 블록의 비어있는 부분일 경우 게임보드 업데이트를 하지 않는다.
-        if (sector === blockStatus[0]) {
-          return
-        }
-        preBoard[i + position.y][j + position.x] = copiedMold[i][j]
-      })
-    })
-    
-    return preBoard
-  }
-  
   const _moveTick = (state, action) => {
-    const nextBoardState = _calNextBoard(state.board, state.moldShape, state.position)
+    const nextBoardState = genNextBoard(state.board, state.moldShape, state.position)
     return {
       ...state,
       board: nextBoardState,
@@ -120,7 +124,7 @@ export default (() => {
   }
   const _moveBlock = (state, direction) => {
     switch (direction) {
-      case directionArray[1]:
+      case keyDirection.LEFT:
         return {
           ...state,
           position: {
@@ -128,7 +132,7 @@ export default (() => {
             x: state.position.x - 1,
           }
         }
-      case directionArray[2]:
+      case keyDirection.DOWN:
         return {
           ...state,
           position: {
@@ -136,7 +140,7 @@ export default (() => {
             y: state.position.y + 1,
           }
         }
-      case directionArray[3]:
+      case keyDirection.RIGHT:
         return {
           ...state,
           position: {
@@ -175,7 +179,7 @@ export default (() => {
     }
   }
   const _renderCurrentBoard = (state, action) => {
-    const nextBoardState = _calNextBoard(state.board, state.moldShape, state.position)
+    const nextBoardState = genNextBoard(state.board, state.moldShape, state.position)
     return {
       ...state,
       board: nextBoardState,
@@ -220,7 +224,7 @@ export const getTransformedMoldShape = (preMoldShape, action) => {
   return copiedMoldShape
 }
 
-export const isEnableToMoveBlock = (currentGameBoard, direction, moldSize, xPosition) => {
+export const isEnableToMoveBlock = (currentGameBoard, direction, moldSize, position, transformedMoldShape) => {
   const enableToMove = (currentGameBoard, coodinationAdder) => {
     const copiedBoard =[...currentGameBoard]
     const maxIndex = copiedBoard.length - 1
@@ -259,29 +263,36 @@ export const isEnableToMoveBlock = (currentGameBoard, direction, moldSize, xPosi
   }
   let coodinationAdder = {}
   switch (direction) {
-    case directionArray[2]:
+    case keyDirection.DOWN:
       coodinationAdder = {
         x: 0,
         y: 1,
       }
       return enableToMove(currentGameBoard, coodinationAdder)
-    case directionArray[1]:
+    case keyDirection.LEFT:
       coodinationAdder = {
         x: -1,
         y: 0,
       }
       return enableToMove(currentGameBoard, coodinationAdder)
-    case directionArray[3]:
+    case keyDirection.RIGHT:
       coodinationAdder = {
         x: 1,
         y: 0,
       }
       return enableToMove(currentGameBoard, coodinationAdder)
-    case directionArray[0]:
-      if (xPosition === undefined || xPosition === null) return
-      const enAbleToMoveAboutStart = xPosition + moldSize.x.start > -1
-      const enAbleToMoveAboutEnd = xPosition + moldSize.x.end < currentGameBoard[0].length
-      return enAbleToMoveAboutStart && enAbleToMoveAboutEnd
+    case keyDirection.UP:
+      if (position === undefined || position === null) return
+      coodinationAdder = {
+        x: 0,
+        y: 0,
+      }
+      const enAbleToMoveAboutStart = position.x + moldSize.x.start > -1
+      const enAbleToMoveAboutEnd = position.x + moldSize.x.end < currentGameBoard[0].length
+      if (enAbleToMoveAboutStart && enAbleToMoveAboutEnd) {
+        return genNextBoard(currentGameBoard, transformedMoldShape, position)
+      }
+      return false
     default:
       return true
   }

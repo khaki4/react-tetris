@@ -17,15 +17,11 @@ import {
   operateTransformFlow,
 } from '../reducers/gameBoard';
 import { moldShape } from '../lib/BlockMold';
-
-
+import { keyDirection, TICK_TIME_INTERVAL, MASK_HEIGHT } from '../lib/Constants'
 
 class PlayGround extends PureComponent {
   constructor(props) {
     super(props);
-    this.LIMIT_TOP = this.props.board.length;
-    this.TICK_TIME_INTERVAL = 300
-    this.MASK_HEIGHT = 5
   }
   componentDidMount() {
     document.addEventListener('keyup', this.handleKeyUp);
@@ -36,23 +32,18 @@ class PlayGround extends PureComponent {
     document.removeEventListener('keyup', this.handleKeyUp);
   }
   movePieceAuto = () => {
-    this.MOVE_TICK = setInterval(() => {
-      const limit = this.LIMIT_TOP
-      const position = this.props.position
-      const isBoardBottom = position > limit;
-      const isPossibleMoveBlock = isEnableToMoveBlock(this.props.board, 83);
-      if (isBoardBottom || !isPossibleMoveBlock) {
-        clearInterval(this.MOVE_TICK);
-        if (position < this.MASK_HEIGHT) {
+    this.moveTick = setInterval(() => {
+      if (!isEnableToMoveBlock(this.props.board, keyDirection.DOWN)) {
+        clearInterval(this.moveTick);
+        if (this.props.position < MASK_HEIGHT) {
           alert('Game Over')
           return
         }
         this.restartBlock();
         return;
       }
-      this.props.clearActiveBlock();
-      this.props.moveTick();
-    }, this.TICK_TIME_INTERVAL);
+      this.props.operateMoveFlow(keyDirection.DOWN)
+    }, TICK_TIME_INTERVAL);
   };
   restartBlock = () => {
     this.props.setActiveToComplete();
