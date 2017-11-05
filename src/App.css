@@ -64,7 +64,8 @@ table {
   font-size: 60px;
 }
 .playGround_wrapper {
-  min-width: 500px;
+  margin: 0 auto;
+  width: 500px;
   padding: 50px;
   font-family: 'Aldrich', sans-serif;
   position: relative;
