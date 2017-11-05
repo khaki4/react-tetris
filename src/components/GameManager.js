@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import GameBoard from './GameBoard';
 import NextBlockSection from './NextBlockSection'
+import PersonalInfo from './PersonalInfo'
 import {
   startGame,
   endGame,
@@ -132,12 +133,9 @@ class PlayGround extends PureComponent {
           />
           {!this.props.isGameStart && <button className="ui orange button btn-restart" onClick={this.gameStart}>Restart</button>}
         </div>
-        <div className="personal-info">
-          <p>Create by
-            <a href="mailto:4dakto@gmail.com">Jiwon</a>.
-            <a href="https://github.com/khaki4/react-tetris">github link</a></p>
-        </div>
+        
         <div className="ui divider"></div>
+        <PersonalInfo />
       </div>
     );
   }

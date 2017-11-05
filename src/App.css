@@ -89,7 +89,7 @@ table {
   float: left;
   width: 20px;
   height: 20px;
-  border: 1px solid #999
+  border: 1px solid #cecece;
 }
 
 .blockmold_unit.filled {
@@ -148,7 +148,7 @@ table {
   margin: 20px;
 }
 .personal-info {
-  padding-left: 50px;
+  padding-left: 20px;
   font-family: 'Aldrich', sans-serif;
   font-size: 12px;
 }
