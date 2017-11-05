@@ -4,6 +4,8 @@ import GameBoard from './GameBoard';
 import BoardMask from './BoardMask'
 import NextBlockSection from './NextBlockSection'
 import {
+  startGame,
+  endGame,
   getTransformedMoldShape,
   setMoldShape,
   setNextMoldShape,
@@ -16,40 +18,57 @@ import {
   operateMoveFlow,
   operateTransformFlow,
 } from '../reducers/gameBoard';
-import { moldShape, getBlockSize } from '../lib/BlockMold';
+import { moldShape } from '../lib/BlockMold';
 import { keyDirection, TICK_TIME_INTERVAL, MASK_HEIGHT } from '../lib/Constants'
+
+const GamePanel = ({ isGameStart, scoreBoard, board, nextMoldShape, gameResume, gamePause, gameRestart }) => {
+  if (!isGameStart) return null
+  return (
+    <div>
+      <BoardMask scoreBoard={scoreBoard} />
+      <GameBoard board={board} />
+      <NextBlockSection nextBlock={nextMoldShape} />
+      <button onClick={gameResume}>Resume</button>
+      <button onClick={gamePause}>Pause</button>
+      <button onClick={gameRestart}>Restart</button>
+    </div>
+  )
+}
 
 class PlayGround extends PureComponent {
   constructor(props) {
     super(props);
+    this.moveTick = null
   }
   componentDidMount() {
-    document.addEventListener('keyup', this.handleKeyUp);
-    this.props.setMoldShape(moldShape());
-    this.movePieceAuto();
   }
   componentWillUnmount() {
     document.removeEventListener('keyup', this.handleKeyUp);
   }
   movePieceAuto = () => {
+    if (this.moveTick) {
+      clearInterval(this.moveTick);
+    }
+    this.props.operateMoveFlow(keyDirection.DOWN)
     this.moveTick = setInterval(() => {
       if (!isEnableToMoveBlock(this.props.board, keyDirection.DOWN)) {
         clearInterval(this.moveTick);
+        const positionY = this.props.position
+        if (positionY < MASK_HEIGHT) {
+          alert('Game Over')
+          return
+        }
         this.restartBlock();
         return;
       }
+      const positionY = this.props.position
+      console.log('positionY::', positionY)
+      console.log('MASKHEIGHT::', MASK_HEIGHT)
       this.props.clearActiveBlock()
       this.props.operateMoveFlow(keyDirection.DOWN)
     }, parseInt(TICK_TIME_INTERVAL - TICK_TIME_INTERVAL * this.props.scoreBoard.level * 0.1));
   }
   restartBlock = () => {
-    const position = this.props.position
-    const size = this.props.moldSize.y.end
-    console.log('position:', position)
-    if (position - size < 0) {
-      alert('Game Over')
-      return
-    }
     this.props.setActiveToComplete();
     this.props.breakBlocks();
     this.props.setBlockInitPosition();
@@ -74,12 +93,36 @@ class PlayGround extends PureComponent {
         return;
     }
   };
+  gameStart = () => {
+    document.addEventListener('keyup', this.handleKeyUp);
+    this.props.startGame()
+    this.gameResume()
+  }
+  gameEnd = () => {
+    this.gamePause()
+    this.props.gameEnd()
+  }
+  gameResume = () => {
+    this.movePieceAuto();
+  }
+  gamePause = () => {
+    if (!this.moveTick) return
+    clearInterval(this.moveTick);
+  }
   render() {
     return (
       <div className="playGround_wrapper">
-        <BoardMask scoreBoard={this.props.scoreBoard} />
-        <GameBoard board={this.props.board} />
-        <NextBlockSection nextBlock={this.props.nextMoldShape} />
+        <GamePanel
+          isGameStart={this.props.isGameStart}
+          scoreBoard={this.props.scoreBoard}
+          board={this.props.board}
+          nextMoldShape={this.props.nextMoldShape}
+          gameResume={this.gameResume}
+          gamePause={this.gamePause}
+          gameRestart={this.gameRestart}
+        />
+        
+        {!this.props.isGameStart && <button onClick={this.gameStart}>Start</button>}
       </div>
     );
   }
@@ -87,8 +130,8 @@ class PlayGround extends PureComponent {
 
 export default connect(
   state => ({
+    isGameStart: state.play.isGameStart,
     moldShape: state.play.moldShape,
-    moldSize: getBlockSize(state.play.moldShape),
     nextMoldShape: state.play.nextMoldShape,
     board: state.play.board,
     position: state.play.position.y,
@@ -99,6 +142,8 @@ export default connect(
     scoreBoard: state.play.scoreBoard,
   }),
   {
+    startGame,
+    endGame,
     setMoldShape,
     setNextMoldShape,
     moveTick,

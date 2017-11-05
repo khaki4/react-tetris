@@ -7,6 +7,8 @@ import { keyDirection, GAMEBOARD_X_LENGTH, GAMEBOARD_Y_LENGTH } from '../lib/Con
 import { blockStatus, moldShape } from '../lib/BlockMold'
 
 // Actions
+export const START_GAME = 'START_GAME'
+export const END_GAME = 'END_GAME'
 export const MOVE_TICK = 'MOVE_TICK'
 export const SET_BLOCK_INIT_POSITION = 'SET_BLOCK_INIT_POSITION'
 export const SET_MOLD_SHAPE = 'SET_MOLD_SHAPE'
@@ -15,12 +17,13 @@ export const SET_ACTIVE_TO_COMPLETE = 'SET_ACTIVE_TO_COMPLETE'
 export const CLEAR_ACTIVE_BLOCK = 'CLEAR_ACTIVE_BLOCK'
 export const MOVE_BLOCK = 'MOVE_BLOCK'
 export const BREAK_BLOCKS = 'BREAK_BLOCKS'
-export const CHECK_ENABLE_TO_MOVE = 'CHECK_ENABLE_TO_MOVE'
 export const OPERATE_MOVE_FLOW = 'OPERATE_MOVE_FLOW'
 export const OPERATE_TRANSFORM_FLOW = 'OPERATE_TRANSFORM_FLOW'
 export const RENDER_CURRENT_BOARD = 'RENDER_CURRENT_BOARD'
 
 // Action Creators
+export const startGame = () => ({type: START_GAME})
+export const endGame = () => ({type: END_GAME})
 export const moveTick = () => ({type: MOVE_TICK})
 export const setBlockInitPosition = () => ({type: SET_BLOCK_INIT_POSITION})
 export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: moldShape})
@@ -68,16 +71,36 @@ export default (() => {
       x: 3,
       y: 0,
     },
-    board: initBoard,
-    moldShape: moldShape(),
-    nextMoldShape: moldShape(),
+    board: [],
+    moldShape: [],
+    nextMoldShape: [],
     enableToMoveBlock: true,
     scoreBoard: {
       score: 0,
       level: 1,
       breakLines: 0,
+    },
+    isGameStart: false,
+  }
+  const _startGame = (state, action) => {
+    return {
+      position: {
+        x: 3,
+        y: 0,
+      },
+      board: initBoard,
+      moldShape: moldShape(),
+      nextMoldShape: moldShape(),
+      enableToMoveBlock: true,
+      scoreBoard: {
+        score: 0,
+        level: 1,
+        breakLines: 0,
+      },
+      isGameStart: true,
     }
   }
+  const _endGame = (state, action) => initState
   const _moveTick = (state, action) => {
     const nextBoardState = genNextBoard(state.board, state.moldShape, state.position)
     return {
@@ -212,6 +235,10 @@ export default (() => {
   }
   return (state = initState, action) => {
     switch (action.type) {
+      case START_GAME:
+        return _startGame(state, action)
+      case END_GAME:
+        return _endGame(state, action)
       case SET_BLOCK_INIT_POSITION:
         return _restartBlock(state, action)
       case MOVE_TICK:

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import PlayGround from './components/GameManager'
+import GameEntryPage from './components/GameEntryPage'
+import GameManager from './components/GameManager'
 import "./App.css";
 
 export default () => {
@@ -8,7 +9,8 @@ export default () => {
     <div className="App">
       <Router>
         <div>
-          <Route exact path="/" component={PlayGround} />
+          <Route exact path="/" component={GameEntryPage} />
+          <Route path="/playground" component={GameManager} />
         </div>
       </Router>
     </div>
