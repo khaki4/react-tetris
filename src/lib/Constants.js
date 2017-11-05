@@ -8,7 +8,7 @@ export const keyDirection = (() => {
   }
 })()
 
-export const GAMEBOARD_X_LENGTH = 10
-export const GAMEBOARD_Y_LENGTH = 22
+export const MASK_HEIGHT = 4
 export const TICK_TIME_INTERVAL = 1000
-export const MASK_HEIGHT = 2
+export const GAMEBOARD_X_LENGTH = 10
+export const GAMEBOARD_Y_LENGTH = 20 + MASK_HEIGHT

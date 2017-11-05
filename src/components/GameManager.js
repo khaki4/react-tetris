@@ -52,6 +52,7 @@ class PlayGround extends PureComponent {
     this.moveTick = null
   }
   componentDidMount() {
+    this.gameStart()
   }
   componentWillUnmount() {
     document.removeEventListener('keyup', this.handleKeyUp);
@@ -60,8 +61,8 @@ class PlayGround extends PureComponent {
     if (this.moveTick) {
       clearInterval(this.moveTick);
     }
-    this.props.operateMoveFlow(keyDirection.DOWN)
     this.moveTick = setInterval(() => {
+      const positionY = this.props.position
       if (!isEnableToMoveBlock(this.props.board, keyDirection.DOWN)) {
         clearInterval(this.moveTick);
         const positionY = this.props.position
@@ -69,10 +70,12 @@ class PlayGround extends PureComponent {
           alert('Game Over')
           return
         }
+        console.log('Re positionY', positionY)
         this.restartBlock();
         return;
       }
-      const positionY = this.props.position
+      
+      console.log('positionY', positionY)
       this.props.clearActiveBlock()
       this.props.operateMoveFlow(keyDirection.DOWN)
     }, parseInt(TICK_TIME_INTERVAL - TICK_TIME_INTERVAL * this.props.scoreBoard.level * 0.1));
