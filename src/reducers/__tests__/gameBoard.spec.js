@@ -110,10 +110,21 @@ describe('gameBoard Test', () => {
         },
         board: initBoard,
         moldShape: [],
+        enableToMoveBlock: true,
+        scoreBoard: {
+          score: 0,
+          level: 1,
+          breakLines: 0,
+        }
       }
       expect(reducer(initState, fromGameBoard.breakBlocks()))
         .toEqual({
           ...initState,
+          scoreBoard: {
+            ...initState.scoreBoard,
+            score: 160,
+            breakLines: 2,
+          },
           board: [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -318,7 +329,7 @@ describe('gameBoard Test', () => {
           fromGameBoard.getTransformedMoldShape(initState.moldShape)))
         .toEqual(false)
     })
-    it('블록의 회전 경로에 쌓인 블록이 있다면 isEnableToMoveBlock false 반환 해야 한다', () => {
+    it.skip('블록의 회전 경로에 쌓인 블록이 있다면 isEnableToMoveBlock false 반환 해야 한다', () => {
       const beforeBlock = [
         [2, 2, 2, 2],
         [2, 2, 2, 2],
@@ -502,7 +513,7 @@ describe('gameBoard Test', () => {
     })
   })
 })
-describe.only('score 관련 Test', () => {
+describe('score 관련 Test', () => {
   it('1000 마다 다음레벨로 넘어가야 한다', () => {
   
   })

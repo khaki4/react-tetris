@@ -43,7 +43,7 @@ class PlayGround extends PureComponent {
         return;
       }
       this.props.clearActiveBlock()
-      // this.props.operateMoveFlow(keyDirection.DOWN)
+      this.props.operateMoveFlow(keyDirection.DOWN)
     }, parseInt(TICK_TIME_INTERVAL - TICK_TIME_INTERVAL * this.props.scoreBoard.level * 0.1));
   }
   restartBlock = () => {

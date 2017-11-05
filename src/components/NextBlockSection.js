@@ -4,11 +4,10 @@ import { blockStatus } from '../lib/BlockMold'
 class NextBlockSection extends PureComponent {
   render() {
     return (
-      <div className="nextblocksection">
+      <div className="nextblocksection" style={{width: this.props.nextBlock.length * 20}}>
         <h2>Next Block</h2>
         {this.props.nextBlock.map((rows, i) => {
-          const addedBlankRows = [blockStatus[0], ...rows]
-          return addedBlankRows.map((sector, j) => {
+          return rows.map((sector, j) => {
             return (
               <div
                 key={i + j}
