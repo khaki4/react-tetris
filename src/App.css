@@ -93,7 +93,10 @@ table {
 }
 
 .blockmold_unit.filled {
-  background: red;
+  background: hotpink;
+}
+.blockmold_unit.complete {
+  background: lightslategrey;
 }
 .gameboard_wrapper {
   float: left;
