@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import PlayGround from './components/PlayGround'
+import PlayGround from './components/GameManager'
 import "./App.css";
 
 export default () => {
