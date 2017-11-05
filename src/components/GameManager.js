@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import GameBoard from './GameBoard';
-import BoardMask from './BoardMask'
 import NextBlockSection from './NextBlockSection'
 import {
   startGame,
@@ -21,16 +20,27 @@ import {
 import { moldShape } from '../lib/BlockMold';
 import { keyDirection, TICK_TIME_INTERVAL, MASK_HEIGHT } from '../lib/Constants'
 
-const GamePanel = ({ isGameStart, scoreBoard, board, nextMoldShape, gameResume, gamePause, gameRestart }) => {
+const GamePanel = ({ isGameStart, scoreBoard, board, nextMoldShape, gameResume, gamePause, gameEnd }) => {
   if (!isGameStart) return null
   return (
     <div>
-      <BoardMask scoreBoard={scoreBoard} />
-      <GameBoard board={board} />
-      <NextBlockSection nextBlock={nextMoldShape} />
-      <button onClick={gameResume}>Resume</button>
-      <button onClick={gamePause}>Pause</button>
-      <button onClick={gameRestart}>Restart</button>
+      <GameBoard board={board} scoreBoard={scoreBoard} />
+      <div className="gameinfo">
+        <NextBlockSection nextBlock={nextMoldShape} />
+        <div className="button-groups">
+          <div className="ui icon buttons">
+            <button className="ui button" onClick={gameResume}>
+              <i className="play icon"></i>
+            </button>
+            <button className="ui button" onClick={gamePause}>
+              <i className="pause icon"></i>
+            </button>
+            <button className="ui button" onClick={gameEnd}>
+              <i className="stop icon"></i>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -62,8 +72,6 @@ class PlayGround extends PureComponent {
         return;
       }
       const positionY = this.props.position
-      console.log('positionY::', positionY)
-      console.log('MASKHEIGHT::', MASK_HEIGHT)
       this.props.clearActiveBlock()
       this.props.operateMoveFlow(keyDirection.DOWN)
     }, parseInt(TICK_TIME_INTERVAL - TICK_TIME_INTERVAL * this.props.scoreBoard.level * 0.1));
@@ -100,7 +108,7 @@ class PlayGround extends PureComponent {
   }
   gameEnd = () => {
     this.gamePause()
-    this.props.gameEnd()
+    this.props.endGame()
   }
   gameResume = () => {
     this.movePieceAuto();
@@ -111,18 +119,25 @@ class PlayGround extends PureComponent {
   }
   render() {
     return (
-      <div className="playGround_wrapper">
-        <GamePanel
-          isGameStart={this.props.isGameStart}
-          scoreBoard={this.props.scoreBoard}
-          board={this.props.board}
-          nextMoldShape={this.props.nextMoldShape}
-          gameResume={this.gameResume}
-          gamePause={this.gamePause}
-          gameRestart={this.gameRestart}
-        />
-        
-        {!this.props.isGameStart && <button onClick={this.gameStart}>Start</button>}
+      <div>
+        <div className="playGround_wrapper cf">
+          <GamePanel
+            isGameStart={this.props.isGameStart}
+            scoreBoard={this.props.scoreBoard}
+            board={this.props.board}
+            nextMoldShape={this.props.nextMoldShape}
+            gameResume={this.gameResume}
+            gamePause={this.gamePause}
+            gameEnd={this.gameEnd}
+          />
+          {!this.props.isGameStart && <button className="ui orange button btn-restart" onClick={this.gameStart}>Restart</button>}
+        </div>
+        <div className="personal-info">
+          <p>Create by
+            <a href="mailto:4dakto@gmail.com">Jiwon</a>.
+            <a href="https://github.com/khaki4/react-tetris">github link</a></p>
+        </div>
+        <div className="ui divider"></div>
       </div>
     );
   }

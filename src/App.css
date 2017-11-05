@@ -56,13 +56,22 @@ table {
 .cf:after {
   clear: both;
 }
-.playGround_wrapper {
-  position: relative;
-  width: 800px;
-  height: 500px;
-  border: 1px solid black;
+.entrypage {
+  padding-top: 100px;
 }
-
+.entrypage a {
+  font-family: 'Spirax';
+  font-size: 60px;
+}
+.playGround_wrapper {
+  min-width: 500px;
+  padding: 50px;
+  font-family: 'Aldrich', sans-serif;
+  position: relative;
+}
+.playGround_wrapper button {
+  font-family: 'Aldrich', sans-serif;
+}
 .blockItem {
   display: inline-block;
   position: absolute;
@@ -86,8 +95,12 @@ table {
 .blockmold_unit.filled {
   background: red;
 }
-.gameboard {
+.gameboard_wrapper {
   float: left;
+  padding:10px;
+  box-shadow: 0 0 10px 2px #eee;
+}
+.gameboard {
   width: 200px;
   height: 400px;
 }
@@ -99,16 +112,43 @@ table {
 
 .nextblocksection {
   float: left;
-  margin: 0 0 0 20px;
+  position: relative;
+  text-align: center;
+  margin: 0 0 0 25px;
   padding: 20px;
-  border: 1px solid #999999;
-  width: 100px;
+  padding-bottom: 0;
+  box-shadow: 0 0 10px 2px #eee;
+  width: 120px;
+  height: 140px;
 }
-
+.nextblocksection_nextblock {
+  display: inline-block;
+}
+.gameinfo {
+  float: left;
+  width: 140px;
+}
 .nextblocksection .blockmold_unit {
   border: 0;
 }
 .nextblocksection .blockmold_unit.filled {
   border: 1px solid #eee;
   background: green;
+}
+
+.btn-restart {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  margin-left: -55px!important;
+}
+
+.button-groups {
+  float: left;
+  margin: 20px;
+}
+.personal-info {
+  padding-left: 50px;
+  font-family: 'Aldrich', sans-serif;
+  font-size: 12px;
 }

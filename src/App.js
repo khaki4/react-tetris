@@ -6,7 +6,7 @@ import "./App.css";
 
 export default () => {
   return (
-    <div className="App">
+    <div className="App container">
       <Router>
         <div>
           <Route exact path="/" component={GameEntryPage} />
