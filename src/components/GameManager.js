@@ -16,7 +16,7 @@ import {
   operateMoveFlow,
   operateTransformFlow,
 } from '../reducers/gameBoard';
-import { moldShape } from '../lib/BlockMold';
+import { moldShape, getBlockSize } from '../lib/BlockMold';
 import { keyDirection, TICK_TIME_INTERVAL, MASK_HEIGHT } from '../lib/Constants'
 
 class PlayGround extends PureComponent {
@@ -35,10 +35,6 @@ class PlayGround extends PureComponent {
     this.moveTick = setInterval(() => {
       if (!isEnableToMoveBlock(this.props.board, keyDirection.DOWN)) {
         clearInterval(this.moveTick);
-        if (this.props.position < MASK_HEIGHT) {
-          alert('Game Over')
-          return
-        }
         this.restartBlock();
         return;
       }
@@ -47,6 +43,13 @@ class PlayGround extends PureComponent {
     }, parseInt(TICK_TIME_INTERVAL - TICK_TIME_INTERVAL * this.props.scoreBoard.level * 0.1));
   }
   restartBlock = () => {
+    const position = this.props.position
+    const size = this.props.moldSize.y.end
+    console.log('position:', position)
+    if (position - size < 0) {
+      alert('Game Over')
+      return
+    }
     this.props.setActiveToComplete();
     this.props.breakBlocks();
     this.props.setBlockInitPosition();
@@ -85,6 +88,7 @@ class PlayGround extends PureComponent {
 export default connect(
   state => ({
     moldShape: state.play.moldShape,
+    moldSize: getBlockSize(state.play.moldShape),
     nextMoldShape: state.play.nextMoldShape,
     board: state.play.board,
     position: state.play.position.y,
