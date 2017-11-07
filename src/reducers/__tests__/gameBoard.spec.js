@@ -293,6 +293,37 @@ describe('gameBoard Test', () => {
           }
         })
     })
+    it('빠르게 아래로 내리기를 실행 하면 블록이 이동 가능한 범위에서 바닥에 쌓여야한다', () => {
+      const initBoard = [
+        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ]
+      const expectedBoard = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ]
+      const initState = {
+        position: {
+          x: 3,
+          y: 0,
+        },
+        board: initBoard,
+        moldShape: [],
+      }
+      expect(reducer(initState, fromGameBoard.moveDownQuickly()))
+        .toEqual({
+          ...initState,
+          board: expectedBoard
+        })
+    })
     describe('keyboard key 입력', () => {
       const initBoard = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
