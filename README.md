@@ -1,6 +1,6 @@
 ## Tetris 만들기
 
-### Demo: [Click ver. 17.11.5](https://react-tetris-hntrmyobdh.now.sh/)
+### Demo: [Click ver. 17.11.7](https://react-tetris-pyscgeqcub.now.sh/)
 #### Only Keyboard available
  - ROTATE - 'w'
  - DOWN - 's'
@@ -15,6 +15,7 @@
  - [x] 다음 블록 보여주기
  - [x] 스코어 표시
  - [x] pause / start 기능
+ - [x] 빠르게 내리기 기능
 
 ### bugs:
  - [x] 블럭이 이동 할 때 바로 화면 업데이트
