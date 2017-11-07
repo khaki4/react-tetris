@@ -2,12 +2,13 @@ import reducer, * as fromGameBoard from '../gameBoard'
 import * as fromBlockMold from '../../lib/BlockMold'
 import _chunk from 'lodash/chunk'
 import { moveBlock } from '../gameBoard';
+import { keyDirection, GAMEBOARD_X_LENGTH, GAMEBOARD_Y_LENGTH } from '../../lib/Constants'
 
 describe('gameBoard Test', () => {
   let initBoard, expectedBoard, initState;
   beforeEach(() => {
-    initBoard = _chunk(new Array(200).fill(0), 10)
-    expectedBoard = _chunk(new Array(200).fill(0), 10)
+    initBoard = _chunk(new Array(GAMEBOARD_X_LENGTH * GAMEBOARD_Y_LENGTH).fill(fromBlockMold.blockStatus[0]), GAMEBOARD_X_LENGTH)
+    expectedBoard = _chunk(new Array(GAMEBOARD_X_LENGTH * GAMEBOARD_Y_LENGTH).fill(0), GAMEBOARD_X_LENGTH)
     initState = {
       position: 0,
       board: initBoard,
@@ -15,8 +16,8 @@ describe('gameBoard Test', () => {
     }
   })
   afterEach(() => {
-    initBoard = _chunk(new Array(200).fill(0), 10)
-    expectedBoard = _chunk(new Array(200).fill(0), 10)
+    initBoard = _chunk(new Array(GAMEBOARD_X_LENGTH * GAMEBOARD_Y_LENGTH).fill(fromBlockMold.blockStatus[0]), GAMEBOARD_X_LENGTH)
+    expectedBoard = _chunk(new Array(GAMEBOARD_X_LENGTH * GAMEBOARD_Y_LENGTH).fill(fromBlockMold.blockStatus[0]), GAMEBOARD_X_LENGTH)
     initState = {
       position: 0,
       board: initBoard,
@@ -26,14 +27,24 @@ describe('gameBoard Test', () => {
 
   describe('gameboard update 테스트', () => {
     it('setActiveToComplete: active 블록은 complete 블록으로 바뀌어야 한다', () => {
-      initBoard[19][0] = fromBlockMold.blockStatus[1]
-      initBoard[19][1] = fromBlockMold.blockStatus[1]
-      initBoard[19][1] = fromBlockMold.blockStatus[1]
-      expectedBoard[19][0] = fromBlockMold.blockStatus[3]
-      expectedBoard[19][1] = fromBlockMold.blockStatus[3]
-      expectedBoard[19][1] = fromBlockMold.blockStatus[3]
-      expect(reducer(initState, fromGameBoard.setActiveToComplete(initBoard)).board)
-        .toEqual(expectedBoard)
+      const initBoard = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+      ]
+      const nextBoard =  [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [3, 3, 3, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 3, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 3, 0, 0, 0, 0, 0, 0, 0]
+      ]
+      expect(reducer({...initState, board: initBoard}, fromGameBoard.setActiveToComplete()))
+        .toEqual({...initState, board: nextBoard})
     })
     it('clearActiveBlock: 액트브 블록을 클리어 해야 한다', () => {
       const initBoard = [
@@ -45,7 +56,7 @@ describe('gameBoard Test', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 3, 3, 3, 3, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -67,7 +78,7 @@ describe('gameBoard Test', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 3, 3, 3, 3, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -99,10 +110,21 @@ describe('gameBoard Test', () => {
         },
         board: initBoard,
         moldShape: [],
+        enableToMoveBlock: true,
+        scoreBoard: {
+          score: 0,
+          level: 1,
+          breakLines: 0,
+        }
       }
       expect(reducer(initState, fromGameBoard.breakBlocks()))
         .toEqual({
           ...initState,
+          scoreBoard: {
+            ...initState.scoreBoard,
+            score: 160,
+            breakLines: 2,
+          },
           board: [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -181,7 +203,7 @@ describe('gameBoard Test', () => {
           .toEqual(afterBlock4)
       })
     })
-    it('블록의 횡 시작, 끝 좌표를 반환 해야 한다', () => {
+    it('블록의 시작, 끝 좌표를 반환 해야 한다', () => {
       const block1 = [
         [0, 0, 0, 0],
         [0, 0, 0, 0],
@@ -199,6 +221,10 @@ describe('gameBoard Test', () => {
           x: {
             start: 0,
             end: 3,
+          },
+          y: {
+            start: 2,
+            end: 2,
           }
         })
       expect(fromBlockMold.getBlockSize(block2))
@@ -206,10 +232,14 @@ describe('gameBoard Test', () => {
           x: {
             start: 1,
             end: 2,
+          },
+          y: {
+            start: 0,
+            end: 2,
           }
         })
     })
-    it.skip('블록이 회전 이후 게임 보드를 벗어나는 경우 isEnableToMoveBlock false 반환 해야 한다', () => {
+    it('블록이 회전 이후 게임 보드를 벗어나는 경우 isEnableToMoveBlock false 반환 해야 한다', () => {
       const initBoard = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 3, 0, 0, 0, 0, 0],
@@ -231,31 +261,138 @@ describe('gameBoard Test', () => {
           [0, 0, 0, 0],
         ],
       }
-      expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'up', fromBlockMold.getBlockSize(initState.moldShape)))
+      expect(fromGameBoard.isEnableToMoveBlock(initBoard, keyDirection.UP, fromBlockMold.getBlockSize(initState.moldShape), initState.position, fromGameBoard.getTransformedMoldShape(initState.moldShape)))
+        .toEqual(false)
+    })
+    it('블록 회전 이후 쌓인 블록과 겹치지 않으면 isEnableToMoveBlock true 반환 해야 한다', () => {
+      const initBoard = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      ]
+      const initState = {
+        position: {
+          x: 4,
+          y: 5,
+        },
+        board: initBoard,
+        moldShape: [
+          [1, 1, 1, 1],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+      }
+      expect(
+        fromGameBoard.isEnableToMoveBlock(
+          initBoard,
+          keyDirection.UP,
+          fromBlockMold.getBlockSize(initState.moldShape),
+          initState.position,
+          fromGameBoard.getTransformedMoldShape(initState.moldShape)))
+        .toEqual(true)
+    })
+    it('블록 회전 이후 쌓인 블록과 겹치면 isEnableToMoveBlock false 반환 해야 한다', () => {
+      const initBoard = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+      ]
+      const initState = {
+        position: {
+          x: 4,
+          y: 0,
+        },
+        board: initBoard,
+        moldShape: [
+          [1, 1, 1, 1],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+          [0, 0, 0, 0],
+        ],
+      }
+      expect(
+        fromGameBoard.isEnableToMoveBlock(
+          initBoard,
+          keyDirection.UP,
+          fromBlockMold.getBlockSize(initState.moldShape),
+          initState.position,
+          fromGameBoard.getTransformedMoldShape(initState.moldShape)))
+        .toEqual(false)
+    })
+    it.skip('블록의 회전 경로에 쌓인 블록이 있다면 isEnableToMoveBlock false 반환 해야 한다', () => {
+      const beforeBlock = [
+        [2, 2, 2, 2],
+        [2, 2, 2, 2],
+        [1, 1, 1, 1],
+        [0, 0, 0, 0],
+      ]
+      const afterBlock = [
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+        [0, 1, 0, 0],
+      ]
+      const initBoard = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+      ]
+      const initState = {
+        position: {
+          x: 0,
+          y: 2,
+        },
+        board: initBoard,
+        moldShape: beforeBlock,
+      }
+      expect(
+        fromGameBoard.isEnableToMoveBlock(
+          initBoard,
+          keyDirection.UP,
+          fromBlockMold.getBlockSize(initState.moldShape),
+          initState.position,
+          fromGameBoard.getTransformedMoldShape(initState.moldShape)))
         .toEqual(false)
     })
   })
   describe('이동관련 테스트', () => {
     it('checkEnableToMoveBlock: 블록이 이동 한 후 complete 블록과 겹치치 않으면 isEnableToMoveBlock true 반환 해야 한다', () => {
-      initBoard[17][0] = fromBlockMold.blockStatus[1]
-      initBoard[17][1] = fromBlockMold.blockStatus[1]
-      initBoard[17][2] = fromBlockMold.blockStatus[1]
-      initBoard[19][0] = fromBlockMold.blockStatus[3]
-      initBoard[19][1] = fromBlockMold.blockStatus[3]
-      initBoard[19][2] = fromBlockMold.blockStatus[3]
+      const initBoard = [
+        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 2, 2, 2, 2, 0, 0, 0],
+        [0, 0, 0, 2, 2, 2, 2, 0, 0, 0],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+      ]
 
-      expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'down'))
+      expect(fromGameBoard.isEnableToMoveBlock(initBoard, keyDirection.DOWN))
         .toEqual(true)
     })
     it('checkEnableToMoveBlock: 블록이 이동 한 후 complete 블록과 겹쳐지면 isEnableToMoveBlock false 반환 해야 한다', () => {
-      initBoard[18][0] = fromBlockMold.blockStatus[1]
-      initBoard[18][1] = fromBlockMold.blockStatus[1]
-      initBoard[18][2] = fromBlockMold.blockStatus[1]
-      initBoard[19][0] = fromBlockMold.blockStatus[3]
-      initBoard[19][1] = fromBlockMold.blockStatus[3]
-      initBoard[19][2] = fromBlockMold.blockStatus[3]
+      const initBoard = [
+        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 3, 3, 3, 3, 3, 3, 3],
+      ]
 
-      expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'down'))
+      expect(fromGameBoard.isEnableToMoveBlock(initBoard, keyDirection.DOWN))
         .toEqual(false)
     })
     it('MOVE_TICK 으로 position.y 가 1 늘어나야 한다', () => {
@@ -341,23 +478,22 @@ describe('gameBoard Test', () => {
         board: initBoard,
         moldShape: [],
       }
-      const directionArray = [65, 83, 68]
-      it('a키를 눌렀을때 position.x가 1 줄어들어야 한다', () => {
-        expect(reducer(initState, fromGameBoard.moveBlock(directionArray[0])))
+      it('down 키를 눌렀을때 position.x가 1 줄어들어야 한다', () => {
+        expect(reducer(initState, fromGameBoard.moveBlock(keyDirection.LEFT)))
           .toEqual({...initState, position: {
             x: initState.position.x - 1,
             y: 0
           }})
       })
-      it('s키를 눌렀을때 position.y가 1 늘어나야 한다', () => {
-        expect(reducer(initState, fromGameBoard.moveBlock(directionArray[1])))
+      it('down 키를 눌렀을때 position.y가 1 늘어나야 한다', () => {
+        expect(reducer(initState, fromGameBoard.moveBlock(keyDirection.DOWN)))
           .toEqual({...initState, position: { x: 3, y: 1}})
       })
-      it('d키를 눌렀을 때 position.x가 1 늘어나야 한다', () => {
+      it('right 키를 눌렀을 때 position.x가 1 늘어나야 한다', () => {
         expect(reducer(initState, fromGameBoard.moveBlock('d')))
           .toEqual({...initState, position: { x: 3, y: 0}})
       })
-      it('a키를 눌렀을때 블록이 이미쌓여있는 블록과 만나면 isEnableToMoveBlock false 반환 해야 한다', () => {
+      it('left 키를 눌렀을때 블록이 이미쌓여있는 블록과 만나면 isEnableToMoveBlock false 반환 해야 한다', () => {
         const initBoard = [
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -366,10 +502,10 @@ describe('gameBoard Test', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
-        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'left'))
+        expect(fromGameBoard.isEnableToMoveBlock(initBoard, keyDirection.LEFT))
           .toEqual(false)
       })
-      it('a키를 눌렀을때 블록이 게임보드를 넘어가는 경우 움직이지 않아야 한다', () => {
+      it('left 키를 눌렀을때 블록이 게임보드를 넘어가는 경우 움직이지 않아야 한다', () => {
         const initBoard = [
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -378,10 +514,10 @@ describe('gameBoard Test', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
-        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'left'))
+        expect(fromGameBoard.isEnableToMoveBlock(initBoard, keyDirection.LEFT))
           .toEqual(false)
       })
-      it('d키를 눌렀을때 블록이 이미쌓여있는 블록과 만나면 isEnableToMoveBlock false 반환 해야 한다', () => {
+      it('right 키를 눌렀을때 블록이 이미쌓여있는 블록과 만나면 isEnableToMoveBlock false 반환 해야 한다', () => {
         const initBoard = [
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -390,10 +526,10 @@ describe('gameBoard Test', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
-        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'right'))
+        expect(fromGameBoard.isEnableToMoveBlock(initBoard, keyDirection.RIGHT))
           .toEqual(false)
       })
-      it('d키를 눌렀을때 블록이 게임보드를 넘어가는 경우 움직이지 않아야 한다', () => {
+      it('right 키를 눌렀을때 블록이 게임보드를 넘어가는 경우 움직이지 않아야 한다', () => {
         const initBoard = [
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -402,9 +538,14 @@ describe('gameBoard Test', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]
-        expect(fromGameBoard.isEnableToMoveBlock(initBoard, 'right'))
+        expect(fromGameBoard.isEnableToMoveBlock(initBoard, keyDirection.RIGHT))
           .toEqual(false)
       })
     })
+  })
+})
+describe('score 관련 Test', () => {
+  it('1000 마다 다음레벨로 넘어가야 한다', () => {
+  
   })
 })

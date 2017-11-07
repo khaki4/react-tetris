@@ -1,10 +1,78 @@
-.playGround_wrapper {
-  position: relative;
-  width: 800px;
-  height: 500px;
-  border: 1px solid black;
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
+.cf:before,
+.cf:after {
+  content: " "; /* 1 */
+  display: table; /* 2 */
+}
+
+.cf:after {
+  clear: both;
+}
+.entrypage {
+  padding-top: 100px;
+}
+.entrypage a {
+  font-family: 'Spirax';
+  font-size: 60px;
+}
+.playGround_wrapper {
+  margin: 0 auto;
+  width: 500px;
+  padding: 50px;
+  font-family: 'Aldrich', sans-serif;
+  position: relative;
+}
+.playGround_wrapper button {
+  font-family: 'Aldrich', sans-serif;
+}
 .blockItem {
   display: inline-block;
   position: absolute;
@@ -22,13 +90,69 @@
   float: left;
   width: 20px;
   height: 20px;
-  border: 1px solid #999
+  border: 1px solid #cecece;
 }
 
 .blockmold_unit.filled {
-  background: red;
+  background: hotpink;
+}
+.blockmold_unit.complete {
+  background: lightslategrey;
+}
+.gameboard_wrapper {
+  float: left;
+  padding:10px;
+  box-shadow: 0 0 10px 2px #eee;
 }
 .gameboard {
   width: 200px;
-  height: 4000px;
+  height: 400px;
+}
+.boardMask {
+  position: absolute;
+  width: 200px;
+  background: #fff;
+}
+
+.nextblocksection {
+  float: left;
+  position: relative;
+  text-align: center;
+  margin: 0 0 0 25px;
+  padding: 20px;
+  padding-bottom: 0;
+  box-shadow: 0 0 10px 2px #eee;
+  width: 120px;
+  height: 140px;
+}
+.nextblocksection_nextblock {
+  display: inline-block;
+}
+.gameinfo {
+  float: left;
+  width: 140px;
+}
+.nextblocksection .blockmold_unit {
+  border: 0;
+}
+.nextblocksection .blockmold_unit.filled {
+  border: 1px solid #eee;
+  background: green;
+}
+
+.btn-restart {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  margin-left: -55px!important;
+}
+
+.button-groups {
+  float: left;
+  margin: 20px;
+}
+.personal-info {
+  padding-left: 20px;
+  font-family: 'Aldrich', sans-serif;
+  font-size: 12px;
 }
