@@ -9,7 +9,8 @@ import {
   getTransformedMoldShape,
   setMoldShape,
   setNextMoldShape,
-  moveTick,
+  moveTickTwice,
+  moveDownQuickly,
   setActiveToComplete,
   setBlockInitPosition,
   clearActiveBlock,
@@ -101,6 +102,9 @@ class PlayGround extends PureComponent {
       case 68: // right
         this.props.operateMoveFlow(e.which)
         break;
+      case 32: // quick down
+        this.props.moveDownQuickly(keyDirection.DOWN)
+        break;
       default:
         return;
     }
@@ -162,7 +166,8 @@ export default connect(
     endGame,
     setMoldShape,
     setNextMoldShape,
-    moveTick,
+    moveTickTwice,
+    moveDownQuickly,
     setActiveToComplete,
     setBlockInitPosition,
     clearActiveBlock,

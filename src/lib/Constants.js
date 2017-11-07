@@ -1,10 +1,11 @@
 export const keyDirection = (() => {
-  const directionArray = [87, 83, 65, 68] // up, down, left, right
+  const directionArray = [87, 83, 65, 68, 32] // up, down, left, right, quick down
   return {
     'UP': directionArray[0],
     'DOWN': directionArray[1],
     'LEFT': directionArray[2],
     'RIGHT': directionArray[3],
+    'QUICK_DOWN': directionArray[4],
   }
 })()
 

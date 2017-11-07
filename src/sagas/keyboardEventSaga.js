@@ -1,11 +1,10 @@
-import { put, call, select, throttle, take } from 'redux-saga/effects';
+import { put, call, select, take, throttle } from 'redux-saga/effects';
 import * as fromGameBoard from '../reducers/gameBoard';
 import { getBlockSize } from '../lib/BlockMold'
 import { keyDirection } from '../lib/Constants'
 
 function* workMoveFlow(action) {
-  const getBoard = (state) => state.play.board
-  const board = yield select(getBoard)
+  const board = yield select((state) => state.play.board)
   const enableToMoveBlock = yield fromGameBoard.isEnableToMoveBlock(board, action.payload);
   if (!enableToMoveBlock) return;
   yield put(fromGameBoard.clearActiveBlock())
@@ -18,6 +17,20 @@ function* watchKeyBoardMoveEvent() {
     const action = yield take(fromGameBoard.OPERATE_MOVE_FLOW)
     yield call(workMoveFlow, action)
   }
+}
+
+function* workMoveDownQuicklyFlow() {
+  while (true) {
+    const board = yield select((state) => state.play.board)
+    const enableToMoveBlock = yield fromGameBoard.isEnableToMoveBlock(board, keyDirection.DOWN);
+    if (!enableToMoveBlock) return;
+    yield put(fromGameBoard.clearActiveBlock())
+    yield put(fromGameBoard.moveBlock(keyDirection.DOWN));
+    yield put(fromGameBoard.renderCurrentBoard())
+  }
+}
+function* watchDownQuicklyEvent() {
+  yield throttle(1000, fromGameBoard.MOVE_DOWN_QUICKLY, workMoveDownQuicklyFlow)
 }
 
 function* workTransformFlow() {
@@ -43,5 +56,6 @@ function* watchTransFormBlock() {
 
 export default [
   watchKeyBoardMoveEvent,
+  watchDownQuicklyEvent,
   watchTransFormBlock,
 ]

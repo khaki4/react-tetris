@@ -329,10 +329,10 @@ describe('gameBoard Test', () => {
           fromGameBoard.getTransformedMoldShape(initState.moldShape)))
         .toEqual(false)
     })
-    it.skip('블록의 회전 경로에 쌓인 블록이 있다면 isEnableToMoveBlock false 반환 해야 한다', () => {
+    it('블록의 회전 경로에 쌓인 블록이 있다면 isEnableToMoveBlock false 반환 해야 한다', () => {
       const beforeBlock = [
-        [2, 2, 2, 2],
-        [2, 2, 2, 2],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
         [1, 1, 1, 1],
         [0, 0, 0, 0],
       ]
@@ -353,7 +353,7 @@ describe('gameBoard Test', () => {
       const initState = {
         position: {
           x: 0,
-          y: 2,
+          y: 5,
         },
         board: initBoard,
         moldShape: beforeBlock,
@@ -430,21 +430,13 @@ describe('gameBoard Test', () => {
           }
         })
     })
-    it('빠르게 아래로 내리기를 실행 하면 블록이 이동 가능한 범위에서 바닥에 쌓여야한다', () => {
+    it('MOVE_TICK_TWICE 으로 position.y 가 2 늘어나야 한다', () => {
       const initBoard = [
-        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      ]
-      const expectedBoard = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
-        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ]
       const initState = {
@@ -455,10 +447,13 @@ describe('gameBoard Test', () => {
         board: initBoard,
         moldShape: [],
       }
-      expect(reducer(initState, fromGameBoard.moveDownQuickly()))
+      expect(reducer(initState, fromGameBoard.moveTickTwice()))
         .toEqual({
           ...initState,
-          board: expectedBoard
+          position: {
+            x: 3,
+            y: initState.position.y + 2,
+          }
         })
     })
     describe('keyboard key 입력', () => {
@@ -478,7 +473,7 @@ describe('gameBoard Test', () => {
         board: initBoard,
         moldShape: [],
       }
-      it('down 키를 눌렀을때 position.x가 1 줄어들어야 한다', () => {
+      it('down 키를 눌렀을때 position.x가 2 줄어들어야 한다', () => {
         expect(reducer(initState, fromGameBoard.moveBlock(keyDirection.LEFT)))
           .toEqual({...initState, position: {
             x: initState.position.x - 1,
@@ -546,6 +541,48 @@ describe('gameBoard Test', () => {
 })
 describe('score 관련 Test', () => {
   it('1000 마다 다음레벨로 넘어가야 한다', () => {
-  
+    const initBoard = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+      [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+    ]
+    const nextBoard = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+    const initState = {
+      position: {
+        x: 3,
+        y: 0,
+      },
+      board: initBoard,
+      moldShape: [],
+      nextMoldShape: [],
+      enableToMoveBlock: true,
+      scoreBoard: {
+        score: 900,
+        level: 1,
+        breakLines: 0,
+      },
+      isGameStart: false,
+    }
+    expect(reducer(initState, fromGameBoard.breakBlocks(100)))
+      .toEqual({
+        ...initState,
+        board: nextBoard,
+        scoreBoard: {
+          score: 1060,
+          level: 2,
+          breakLines: 2,
+        }
+      })
   })
+
 })

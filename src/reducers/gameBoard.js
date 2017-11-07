@@ -10,6 +10,8 @@ import { blockStatus, moldShape } from '../lib/BlockMold'
 export const START_GAME = 'START_GAME'
 export const END_GAME = 'END_GAME'
 export const MOVE_TICK = 'MOVE_TICK'
+export const MOVE_TICK_TWICE = 'MOVE_TICK_TWICE'
+export const MOVE_DOWN_QUICKLY = 'MOVE_DOWN_QUICKLY'
 export const SET_BLOCK_INIT_POSITION = 'SET_BLOCK_INIT_POSITION'
 export const SET_MOLD_SHAPE = 'SET_MOLD_SHAPE'
 export const SET_NEXT_MOLD_SHAPE = 'SET_NEXT_MOLD_SHAPE'
@@ -25,6 +27,8 @@ export const RENDER_CURRENT_BOARD = 'RENDER_CURRENT_BOARD'
 export const startGame = () => ({type: START_GAME})
 export const endGame = () => ({type: END_GAME})
 export const moveTick = () => ({type: MOVE_TICK})
+export const moveTickTwice = () => ({type: MOVE_TICK_TWICE})
+export const moveDownQuickly = (keyCode) => ({type: MOVE_DOWN_QUICKLY, payload: keyCode, moveDownQuickly: true})
 export const setBlockInitPosition = () => ({type: SET_BLOCK_INIT_POSITION})
 export const setMoldShape = (moldShape) => ({type: SET_MOLD_SHAPE, payload: moldShape})
 export const setNextMoldShape = (moldShape) => ({type: SET_NEXT_MOLD_SHAPE, payload: moldShape})
@@ -36,7 +40,8 @@ export const operateMoveFlow = (keyCode) => ({type: OPERATE_MOVE_FLOW, payload: 
 export const operateTransformFlow = () => ({type: OPERATE_TRANSFORM_FLOW})
 export const renderCurrentBoard = () => ({type: RENDER_CURRENT_BOARD})
 
-// reducer
+
+// helper function
 const genNextBoard = (preBoard, moldShape, position) => {
   const copiedMold = _chunk([..._flatten(moldShape)], moldShape.length)
   let isValidBoard = true
@@ -61,9 +66,46 @@ const genNextBoard = (preBoard, moldShape, position) => {
       preBoard[i + position.y][j + position.x] = copiedMold[i][j]
     })
   })
-  
   return isValidBoard ? preBoard : null
 }
+const enableToMove = (currentGameBoard, coodinationAdder) => {
+  const copiedBoard =[...currentGameBoard]
+  const maxIndex = copiedBoard.length - 1
+  const xAxisLength = copiedBoard[0].length
+  let isLimitedEnd = true
+  currentGameBoard.forEach((rows, i) => {
+    rows.forEach((currentSector, j) => {
+      const isNilNextBlockStatus = _isNil(copiedBoard[i + coodinationAdder.y])
+      if (i > maxIndex) {
+        isLimitedEnd = false
+        return
+      }
+      // 횡방향으로 이동시 게임 보드를 넘어가는지 체크
+      if (
+        currentSector === blockStatus[1]
+        && (j + coodinationAdder.x < 0 || j + coodinationAdder.x >= xAxisLength)
+      ) {
+        isLimitedEnd = false
+        return
+      }
+      if (currentSector === blockStatus[1] && isNilNextBlockStatus) {
+        isLimitedEnd = false
+        return
+      }
+      if (isNilNextBlockStatus) return
+      const nextSector = copiedBoard[i + coodinationAdder.y][j + coodinationAdder.x]
+      const activeBlock = blockStatus[1]
+      const completeBlock = blockStatus[3]
+      if (currentSector === activeBlock && nextSector === completeBlock) { // 현재 active sector &&
+        isLimitedEnd = false
+        return
+      }
+    })
+  })
+  return isLimitedEnd
+}
+
+// reducer
 export default (() => {
   const initBoard = _chunk(new Array(GAMEBOARD_X_LENGTH * GAMEBOARD_Y_LENGTH).fill(blockStatus[0]), GAMEBOARD_X_LENGTH)
   const initState = {
@@ -109,6 +151,17 @@ export default (() => {
       position: {
         x: state.position.x,
         y: state.position.y + 1,
+      },
+    }
+  }
+  const _moveTickTwice = (state, action) => {
+    const nextBoardState = genNextBoard(state.board, state.moldShape, state.position)
+    return {
+      ...state,
+      board: nextBoardState,
+      position: {
+        x: state.position.x,
+        y: state.position.y + 2,
       },
     }
   }
@@ -243,6 +296,8 @@ export default (() => {
         return _restartBlock(state, action)
       case MOVE_TICK:
         return _moveTick(state, action)
+      case MOVE_TICK_TWICE:
+        return _moveTickTwice(state, action)
       case SET_MOLD_SHAPE:
         return _setMoldShape(state, action)
       case SET_NEXT_MOLD_SHAPE:
@@ -277,42 +332,6 @@ export const getTransformedMoldShape = (preMoldShape, action) => {
 }
 
 export const isEnableToMoveBlock = (currentGameBoard, direction, moldSize, position, transformedMoldShape) => {
-  const enableToMove = (currentGameBoard, coodinationAdder) => {
-    const copiedBoard =[...currentGameBoard]
-    const maxIndex = copiedBoard.length - 1
-    const xAxisLength = copiedBoard[0].length
-    let isLimitedEnd = true
-    currentGameBoard.forEach((rows, i) => {
-      rows.forEach((currentSector, j) => {
-        const isNilNextBlockStatus = _isNil(copiedBoard[i + coodinationAdder.y])
-        if (i > maxIndex) {
-          isLimitedEnd = false
-          return
-        }
-        // 횡방향으로 이동시 게임 보드를 넘어가는지 체크
-        if (
-          currentSector === blockStatus[1]
-          && (j + coodinationAdder.x < 0 || j + coodinationAdder.x >= xAxisLength)
-        ) {
-          isLimitedEnd = false
-          return
-        }
-        if (currentSector === blockStatus[1] && isNilNextBlockStatus) {
-          isLimitedEnd = false
-          return
-        }
-        if (isNilNextBlockStatus) return
-        const nextSector = copiedBoard[i + coodinationAdder.y][j + coodinationAdder.x]
-        const activeBlock = blockStatus[1]
-        const completeBlock = blockStatus[3]
-        if (currentSector === activeBlock && nextSector === completeBlock) { // 현재 active sector &&
-          isLimitedEnd = false
-          return
-        }
-      })
-    })
-    return isLimitedEnd
-  }
   let coodinationAdder = {}
   switch (direction) {
     case keyDirection.DOWN:
@@ -346,7 +365,8 @@ export const isEnableToMoveBlock = (currentGameBoard, direction, moldSize, posit
       
       if (enAbleToMoveAboutStartX && enAbleToMoveAboutEndX && enAbleToMoveAboutStartY && enAbleToMoveAboutEndY) {
         const resultOfGenBoard = genNextBoard(currentGameBoard, transformedMoldShape, position)
-        return !_isNil(resultOfGenBoard)
+        const result = !_isNil(resultOfGenBoard)
+        return result
       }
       return false
     default:
